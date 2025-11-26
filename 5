@@ -1,0 +1,1044 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp6
+{
+    class Author
+    {
+        public string Name { get; set; }
+        public string Nationality { get; set; }
+        public DateTime BirthDate { get; set; }
+
+        public Author(string name, string nationality, DateTime birthDate)
+        {
+            Name = name;
+            Nationality = nationality;
+            BirthDate = birthDate;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Автор: {Name}");
+            Console.WriteLine($"Национальность: {Nationality}");
+            Console.WriteLine($"Дата рождения: {BirthDate:dd.MM.yyyy}");
+        }
+    }
+
+    class Book
+    {
+        public string ISBN { get; set; }
+        public string Title { get; set; }
+        public Author Author { get; set; }
+        public int PublicationYear { get; set; }
+        public string Genre { get; set; }
+        public bool IsAvailable { get; set; }
+
+        public Book(string isbn, string title, Author author, int publicationYear, string genre)
+        {
+            ISBN = isbn;
+            Title = title;
+            Author = author;
+            PublicationYear = publicationYear;
+            Genre = genre;
+            IsAvailable = true;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Книга: {Title}");
+            Console.WriteLine($"ISBN: {ISBN}");
+            Console.WriteLine($"Автор: {Author.Name}");
+            Console.WriteLine($"Год издания: {PublicationYear}");
+            Console.WriteLine($"Жанр: {Genre}");
+            Console.WriteLine($"Доступна: {(IsAvailable ? "Да" : "Нет")}");
+        }
+    }
+
+    class Library
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        private List<Book> books;
+        private List<Author> authors;
+
+        public Library(string name, string address)
+        {
+            Name = name;
+            Address = address;
+            books = new List<Book>();
+            authors = new List<Author>();
+        }
+
+        public void AddBook(Book book)
+        {
+            books.Add(book);
+            if (!authors.Contains(book.Author))
+                authors.Add(book.Author);
+        }
+
+        public void RemoveBook(Book book)
+        {
+            books.Remove(book);
+        }
+
+        public Book FindBookByTitle(string title)
+        {
+            return books.Find(b => b.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public List<Book> FindBooksByAuthor(string authorName)
+        {
+            return books.FindAll(b => b.Author.Name.Equals(authorName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public void DisplayAllBooks()
+        {
+            Console.WriteLine($"Библиотека '{Name}' - Все книги:");
+            foreach (var book in books)
+            {
+                book.DisplayInfo();
+                Console.WriteLine("---");
+            }
+        }
+    }
+
+    // ==================== СИСТЕМА УПРАВЛЕНИЯ ШКОЛОЙ ====================
+
+    class Student
+    {
+        public string StudentId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime BirthDate { get; set; }
+        public List<Course> Courses { get; set; }
+
+        public Student(string studentId, string firstName, string lastName, DateTime birthDate)
+        {
+            StudentId = studentId;
+            FirstName = firstName;
+            LastName = lastName;
+            BirthDate = birthDate;
+            Courses = new List<Course>();
+        }
+
+        public void EnrollInCourse(Course course)
+        {
+            if (!Courses.Contains(course))
+            {
+                Courses.Add(course);
+                course.AddStudent(this);
+            }
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Студент: {FirstName} {LastName}");
+            Console.WriteLine($"ID: {StudentId}");
+            Console.WriteLine($"Дата рождения: {BirthDate:dd.MM.yyyy}");
+            Console.WriteLine($"Курсы: {Courses.Count}");
+        }
+    }
+
+    class Teacher
+    {
+        public string TeacherId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Specialization { get; set; }
+        public List<Course> Courses { get; set; }
+
+        public Teacher(string teacherId, string firstName, string lastName, string specialization)
+        {
+            TeacherId = teacherId;
+            FirstName = firstName;
+            LastName = lastName;
+            Specialization = specialization;
+            Courses = new List<Course>();
+        }
+
+        public void AssignToCourse(Course course)
+        {
+            if (!Courses.Contains(course))
+            {
+                Courses.Add(course);
+                course.Teacher = this;
+            }
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Учитель: {FirstName} {LastName}");
+            Console.WriteLine($"ID: {TeacherId}");
+            Console.WriteLine($"Специализация: {Specialization}");
+            Console.WriteLine($"Курсы: {Courses.Count}");
+        }
+    }
+
+    class Course
+    {
+        public string CourseCode { get; set; }
+        public string CourseName { get; set; }
+        public int Credits { get; set; }
+        public Teacher Teacher { get; set; }
+        public List<Student> Students { get; set; }
+
+        public Course(string courseCode, string courseName, int credits)
+        {
+            CourseCode = courseCode;
+            CourseName = courseName;
+            Credits = credits;
+            Students = new List<Student>();
+        }
+
+        public void AddStudent(Student student)
+        {
+            if (!Students.Contains(student))
+                Students.Add(student);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Курс: {CourseName}");
+            Console.WriteLine($"Код: {CourseCode}");
+            Console.WriteLine($"Кредиты: {Credits}");
+            Console.WriteLine($"Учитель: {Teacher?.FirstName} {Teacher?.LastName}");
+            Console.WriteLine($"Студентов: {Students.Count}");
+        }
+    }
+
+    // ==================== E-COMMERCE СИСТЕМА ====================
+
+    class Customer
+    {
+        public string CustomerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
+        public List<Order> Orders { get; set; }
+
+        public Customer(string customerId, string firstName, string lastName, string email, string address)
+        {
+            CustomerId = customerId;
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+            Address = address;
+            Orders = new List<Order>();
+        }
+
+        public void PlaceOrder(Order order)
+        {
+            Orders.Add(order);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Клиент: {FirstName} {LastName}");
+            Console.WriteLine($"ID: {CustomerId}");
+            Console.WriteLine($"Email: {Email}");
+            Console.WriteLine($"Адрес: {Address}");
+            Console.WriteLine($"Заказов: {Orders.Count}");
+        }
+    }
+
+    class Product
+    {
+        public string ProductId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public int StockQuantity { get; set; }
+        public string Category { get; set; }
+
+        public Product(string productId, string name, string description, decimal price, int stockQuantity, string category)
+        {
+            ProductId = productId;
+            Name = name;
+            Description = description;
+            Price = price;
+            StockQuantity = stockQuantity;
+            Category = category;
+        }
+
+        public void UpdateStock(int quantity)
+        {
+            StockQuantity += quantity;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Товар: {Name}");
+            Console.WriteLine($"ID: {ProductId}");
+            Console.WriteLine($"Цена: {Price:C}");
+            Console.WriteLine($"В наличии: {StockQuantity}");
+            Console.WriteLine($"Категория: {Category}");
+        }
+    }
+
+    class Order
+    {
+        public string OrderId { get; set; }
+        public DateTime OrderDate { get; set; }
+        public Customer Customer { get; set; }
+        public List<OrderItem> Items { get; set; }
+        public string Status { get; set; }
+        public decimal TotalAmount => CalculateTotal();
+
+        public Order(string orderId, Customer customer)
+        {
+            OrderId = orderId;
+            OrderDate = DateTime.Now;
+            Customer = customer;
+            Items = new List<OrderItem>();
+            Status = "Создан";
+        }
+
+        public void AddItem(Product product, int quantity)
+        {
+            Items.Add(new OrderItem(product, quantity));
+        }
+
+        private decimal CalculateTotal()
+        {
+            decimal total = 0;
+            foreach (var item in Items)
+            {
+                total += item.Subtotal;
+            }
+            return total;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Заказ: {OrderId}");
+            Console.WriteLine($"Дата: {OrderDate:dd.MM.yyyy HH:mm}");
+            Console.WriteLine($"Клиент: {Customer.FirstName} {Customer.LastName}");
+            Console.WriteLine($"Статус: {Status}");
+            Console.WriteLine($"Сумма: {TotalAmount:C}");
+            Console.WriteLine($"Товаров: {Items.Count}");
+        }
+    }
+
+    class OrderItem
+    {
+        public Product Product { get; set; }
+        public int Quantity { get; set; }
+        public decimal Subtotal => Product.Price * Quantity;
+
+        public OrderItem(Product product, int quantity)
+        {
+            Product = product;
+            Quantity = quantity;
+        }
+    }
+
+    // ==================== СИСТЕМА УПРАВЛЕНИЯ ПРОЕКТАМИ ====================
+
+    class Team
+    {
+        public string TeamId { get; set; }
+        public string TeamName { get; set; }
+        public List<TeamMember> Members { get; set; }
+        public List<Project> Projects { get; set; }
+
+        public Team(string teamId, string teamName)
+        {
+            TeamId = teamId;
+            TeamName = teamName;
+            Members = new List<TeamMember>();
+            Projects = new List<Project>();
+        }
+
+        public void AddMember(TeamMember member)
+        {
+            if (!Members.Contains(member))
+            {
+                Members.Add(member);
+                member.Team = this;
+            }
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Команда: {TeamName}");
+            Console.WriteLine($"ID: {TeamId}");
+            Console.WriteLine($"Участников: {Members.Count}");
+            Console.WriteLine($"Проектов: {Projects.Count}");
+        }
+    }
+
+    class TeamMember
+    {
+        public string MemberId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Role { get; set; }
+        public string Email { get; set; }
+        public Team Team { get; set; }
+        public List<Task> Tasks { get; set; }
+
+        public TeamMember(string memberId, string firstName, string lastName, string role, string email)
+        {
+            MemberId = memberId;
+            FirstName = firstName;
+            LastName = lastName;
+            Role = role;
+            Email = email;
+            Tasks = new List<Task>();
+        }
+
+        public void AssignTask(Task task)
+        {
+            if (!Tasks.Contains(task))
+            {
+                Tasks.Add(task);
+                task.AssignedTo = this;
+            }
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Участник: {FirstName} {LastName}");
+            Console.WriteLine($"ID: {MemberId}");
+            Console.WriteLine($"Роль: {Role}");
+            Console.WriteLine($"Email: {Email}");
+            Console.WriteLine($"Задач: {Tasks.Count}");
+        }
+    }
+
+    class Project
+    {
+        public string ProjectId { get; set; }
+        public string ProjectName { get; set; }
+        public string Description { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public Team Team { get; set; }
+        public List<Task> Tasks { get; set; }
+        public string Status { get; set; }
+
+        public Project(string projectId, string projectName, string description, DateTime startDate, DateTime endDate)
+        {
+            ProjectId = projectId;
+            ProjectName = projectName;
+            Description = description;
+            StartDate = startDate;
+            EndDate = endDate;
+            Tasks = new List<Task>();
+            Status = "Планирование";
+        }
+
+        public void AddTask(Task task)
+        {
+            if (!Tasks.Contains(task))
+            {
+                Tasks.Add(task);
+                task.Project = this;
+            }
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Проект: {ProjectName}");
+            Console.WriteLine($"ID: {ProjectId}");
+            Console.WriteLine($"Даты: {StartDate:dd.MM.yyyy} - {EndDate:dd.MM.yyyy}");
+            Console.WriteLine($"Статус: {Status}");
+            Console.WriteLine($"Задач: {Tasks.Count}");
+        }
+    }
+
+    class Task
+    {
+        public string TaskId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime DueDate { get; set; }
+        public string Priority { get; set; }
+        public string Status { get; set; }
+        public Project Project { get; set; }
+        public TeamMember AssignedTo { get; set; }
+
+        public Task(string taskId, string title, string description, DateTime dueDate, string priority)
+        {
+            TaskId = taskId;
+            Title = title;
+            Description = description;
+            DueDate = dueDate;
+            Priority = priority;
+            Status = "Новая";
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Задача: {Title}");
+            Console.WriteLine($"ID: {TaskId}");
+            Console.WriteLine($"Срок: {DueDate:dd.MM.yyyy}");
+            Console.WriteLine($"Приоритет: {Priority}");
+            Console.WriteLine($"Статус: {Status}");
+            Console.WriteLine($"Назначена: {AssignedTo?.FirstName} {AssignedTo?.LastName}");
+        }
+    }
+
+    // ==================== СИСТЕМА УПРАВЛЕНИЯ БОЛЬНИЦЕЙ ====================
+
+    class Doctor
+    {
+        public string DoctorId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Specialization { get; set; }
+        public string PhoneNumber { get; set; }
+        public List<Appointment> Appointments { get; set; }
+
+        public Doctor(string doctorId, string firstName, string lastName, string specialization, string phoneNumber)
+        {
+            DoctorId = doctorId;
+            FirstName = firstName;
+            LastName = lastName;
+            Specialization = specialization;
+            PhoneNumber = phoneNumber;
+            Appointments = new List<Appointment>();
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Доктор: {FirstName} {LastName}");
+            Console.WriteLine($"ID: {DoctorId}");
+            Console.WriteLine($"Специализация: {Specialization}");
+            Console.WriteLine($"Телефон: {PhoneNumber}");
+            Console.WriteLine($"Приемов: {Appointments.Count}");
+        }
+    }
+
+    class Patient
+    {
+        public string PatientId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
+        public List<Appointment> Appointments { get; set; }
+
+        public Patient(string patientId, string firstName, string lastName, DateTime birthDate, string phoneNumber, string address)
+        {
+            PatientId = patientId;
+            FirstName = firstName;
+            LastName = lastName;
+            BirthDate = birthDate;
+            PhoneNumber = phoneNumber;
+            Address = address;
+            Appointments = new List<Appointment>();
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Пациент: {FirstName} {LastName}");
+            Console.WriteLine($"ID: {PatientId}");
+            Console.WriteLine($"Дата рождения: {BirthDate:dd.MM.yyyy}");
+            Console.WriteLine($"Телефон: {PhoneNumber}");
+            Console.WriteLine($"Приемов: {Appointments.Count}");
+        }
+    }
+
+    class Appointment
+    {
+        public string AppointmentId { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public string Reason { get; set; }
+        public string Status { get; set; }
+        public Doctor Doctor { get; set; }
+        public Patient Patient { get; set; }
+
+        public Appointment(string appointmentId, DateTime appointmentDate, string reason, Doctor doctor, Patient patient)
+        {
+            AppointmentId = appointmentId;
+            AppointmentDate = appointmentDate;
+            Reason = reason;
+            Doctor = doctor;
+            Patient = patient;
+            Status = "Запланирован";
+
+            doctor.Appointments.Add(this);
+            patient.Appointments.Add(this);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Прием: {AppointmentId}");
+            Console.WriteLine($"Дата: {AppointmentDate:dd.MM.yyyy HH:mm}");
+            Console.WriteLine($"Причина: {Reason}");
+            Console.WriteLine($"Статус: {Status}");
+            Console.WriteLine($"Доктор: {Doctor.FirstName} {Doctor.LastName}");
+            Console.WriteLine($"Пациент: {Patient.FirstName} {Patient.LastName}");
+        }
+    }
+
+    // ==================== ИГРОВАЯ СИСТЕМА ====================
+
+    class Character
+    {
+        public string Name { get; set; }
+        public int Level { get; set; }
+        public int Health { get; set; }
+        public int MaxHealth { get; set; }
+        public int Experience { get; set; }
+        public Inventory Inventory { get; set; }
+        public string Class { get; set; }
+
+        public Character(string name, string characterClass)
+        {
+            Name = name;
+            Class = characterClass;
+            Level = 1;
+            MaxHealth = 100;
+            Health = MaxHealth;
+            Experience = 0;
+            Inventory = new Inventory();
+        }
+
+        public void TakeDamage(int damage)
+        {
+            Health = Math.Max(0, Health - damage);
+        }
+
+        public void Heal(int amount)
+        {
+            Health = Math.Min(MaxHealth, Health + amount);
+        }
+
+        public void AddExperience(int exp)
+        {
+            Experience += exp;
+            if (Experience >= Level * 100)
+            {
+                LevelUp();
+            }
+        }
+
+        private void LevelUp()
+        {
+            Level++;
+            MaxHealth += 20;
+            Health = MaxHealth;
+            Experience = 0;
+            Console.WriteLine($"{Name} достиг {Level} уровня!");
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Персонаж: {Name}");
+            Console.WriteLine($"Класс: {Class}");
+            Console.WriteLine($"Уровень: {Level}");
+            Console.WriteLine($"Здоровье: {Health}/{MaxHealth}");
+            Console.WriteLine($"Опыт: {Experience}");
+        }
+    }
+
+    class Item
+    {
+        public string ItemId { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public int Value { get; set; }
+        public int Weight { get; set; }
+        public bool IsEquippable { get; set; }
+
+        public Item(string itemId, string name, string type, int value, int weight, bool isEquippable = false)
+        {
+            ItemId = itemId;
+            Name = name;
+            Type = type;
+            Value = value;
+            Weight = weight;
+            IsEquippable = isEquippable;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Предмет: {Name}");
+            Console.WriteLine($"ID: {ItemId}");
+            Console.WriteLine($"Тип: {Type}");
+            Console.WriteLine($"Ценность: {Value}");
+            Console.WriteLine($"Вес: {Weight}");
+            Console.WriteLine($"Можно экипировать: {(IsEquippable ? "Да" : "Нет")}");
+        }
+    }
+
+    class Inventory
+    {
+        public int Capacity { get; set; }
+        public List<Item> Items { get; set; }
+        public int TotalWeight => CalculateTotalWeight();
+
+        public Inventory(int capacity = 50)
+        {
+            Capacity = capacity;
+            Items = new List<Item>();
+        }
+
+        public bool AddItem(Item item)
+        {
+            if (TotalWeight + item.Weight <= Capacity)
+            {
+                Items.Add(item);
+                return true;
+            }
+            return false;
+        }
+
+        public void RemoveItem(Item item)
+        {
+            Items.Remove(item);
+        }
+
+        private int CalculateTotalWeight()
+        {
+            int total = 0;
+            foreach (var item in Items)
+            {
+                total += item.Weight;
+            }
+            return total;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Инвентарь:");
+            Console.WriteLine($"Вместимость: {Capacity}");
+            Console.WriteLine($"Занято: {TotalWeight}/{Capacity}");
+            Console.WriteLine($"Предметов: {Items.Count}");
+        }
+    }
+
+    // ==================== СИСТЕМА УПРАВЛЕНИЯ РЕСТОРАНОМ ====================
+
+    class Dish
+    {
+        public string DishId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public string Category { get; set; }
+        public int PreparationTime { get; set; } // в минутах
+
+        public Dish(string dishId, string name, string description, decimal price, string category, int preparationTime)
+        {
+            DishId = dishId;
+            Name = name;
+            Description = description;
+            Price = price;
+            Category = category;
+            PreparationTime = preparationTime;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Блюдо: {Name}");
+            Console.WriteLine($"ID: {DishId}");
+            Console.WriteLine($"Описание: {Description}");
+            Console.WriteLine($"Цена: {Price:C}");
+            Console.WriteLine($"Категория: {Category}");
+            Console.WriteLine($"Время приготовления: {PreparationTime} мин");
+        }
+    }
+
+    class Menu
+    {
+        public string MenuId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public List<Dish> Dishes { get; set; }
+
+        public Menu(string menuId, string name, string description)
+        {
+            MenuId = menuId;
+            Name = name;
+            Description = description;
+            Dishes = new List<Dish>();
+        }
+
+        public void AddDish(Dish dish)
+        {
+            if (!Dishes.Contains(dish))
+                Dishes.Add(dish);
+        }
+
+        public void RemoveDish(Dish dish)
+        {
+            Dishes.Remove(dish);
+        }
+
+        public List<Dish> GetDishesByCategory(string category)
+        {
+            return Dishes.FindAll(d => d.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Меню: {Name}");
+            Console.WriteLine($"ID: {MenuId}");
+            Console.WriteLine($"Описание: {Description}");
+            Console.WriteLine($"Блюд: {Dishes.Count}");
+        }
+    }
+
+    // ==================== СИСТЕМА БРОНИРОВАНИЯ ОТЕЛЕЙ ====================
+
+    class Hotel
+    {
+        public string HotelId { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+        public int StarRating { get; set; }
+        public List<Room> Rooms { get; set; }
+        public List<Booking> Bookings { get; set; }
+
+        public Hotel(string hotelId, string name, string address, string phoneNumber, int starRating)
+        {
+            HotelId = hotelId;
+            Name = name;
+            Address = address;
+            PhoneNumber = phoneNumber;
+            StarRating = starRating;
+            Rooms = new List<Room>();
+            Bookings = new List<Booking>();
+        }
+
+        public void AddRoom(Room room)
+        {
+            if (!Rooms.Contains(room))
+            {
+                Rooms.Add(room);
+                room.Hotel = this;
+            }
+        }
+
+        public List<Room> GetAvailableRooms(DateTime date)
+        {
+            return Rooms.FindAll(room => room.IsAvailable(date));
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Отель: {Name}");
+            Console.WriteLine($"ID: {HotelId}");
+            Console.WriteLine($"Адрес: {Address}");
+            Console.WriteLine($"Телефон: {PhoneNumber}");
+            Console.WriteLine($"Звезды: {StarRating}");
+            Console.WriteLine($"Комнат: {Rooms.Count}");
+        }
+    }
+
+    class Room
+    {
+        public string RoomNumber { get; set; }
+        public string RoomType { get; set; }
+        public decimal PricePerNight { get; set; }
+        public int Capacity { get; set; }
+        public string Amenities { get; set; }
+        public Hotel Hotel { get; set; }
+        public List<Booking> Bookings { get; set; }
+
+        public Room(string roomNumber, string roomType, decimal pricePerNight, int capacity, string amenities)
+        {
+            RoomNumber = roomNumber;
+            RoomType = roomType;
+            PricePerNight = pricePerNight;
+            Capacity = capacity;
+            Amenities = amenities;
+            Bookings = new List<Booking>();
+        }
+
+        public bool IsAvailable(DateTime date)
+        {
+            return !Bookings.Exists(booking => booking.CheckInDate <= date && booking.CheckOutDate > date);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Комната: {RoomNumber}");
+            Console.WriteLine($"Тип: {RoomType}");
+            Console.WriteLine($"Цена за ночь: {PricePerNight:C}");
+            Console.WriteLine($"Вместимость: {Capacity}");
+            Console.WriteLine($"Удобства: {Amenities}");
+        }
+    }
+
+    class Booking
+    {
+        public string BookingId { get; set; }
+        public DateTime CheckInDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
+        public int NumberOfGuests { get; set; }
+        public string GuestName { get; set; }
+        public string GuestEmail { get; set; }
+        public Room Room { get; set; }
+        public Hotel Hotel { get; set; }
+        public string Status { get; set; }
+        public decimal TotalAmount => CalculateTotalAmount();
+
+        public Booking(string bookingId, DateTime checkInDate, DateTime checkOutDate, int numberOfGuests, string guestName, string guestEmail, Room room)
+        {
+            BookingId = bookingId;
+            CheckInDate = checkInDate;
+            CheckOutDate = checkOutDate;
+            NumberOfGuests = numberOfGuests;
+            GuestName = guestName;
+            GuestEmail = guestEmail;
+            Room = room;
+            Hotel = room.Hotel;
+            Status = "Подтверждено";
+
+            room.Bookings.Add(this);
+            Hotel.Bookings.Add(this);
+        }
+
+        private decimal CalculateTotalAmount()
+        {
+            int nights = (CheckOutDate - CheckInDate).Days;
+            return Room.PricePerNight * nights;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Бронирование: {BookingId}");
+            Console.WriteLine($"Гость: {GuestName}");
+            Console.WriteLine($"Даты: {CheckInDate:dd.MM.yyyy} - {CheckOutDate:dd.MM.yyyy}");
+            Console.WriteLine($"Гостей: {NumberOfGuests}");
+            Console.WriteLine($"Отель: {Hotel.Name}");
+            Console.WriteLine($"Комната: {Room.RoomNumber}");
+            Console.WriteLine($"Сумма: {TotalAmount:C}");
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("=== ДЕМОНСТРАЦИЯ UML ДИАГРАММ КЛАССОВ ===\n");
+
+            // Библиотечная система
+            Console.WriteLine("=== СИСТЕМА УПРАВЛЕНИЯ БИБЛИОТЕКОЙ ===\n");
+
+            Author tolstoy = new Author("Лев Толстой", "Русский", new DateTime(1828, 9, 9));
+            Book warAndPeace = new Book("978-5-389-00001-1", "Война и мир", tolstoy, 1869, "Роман");
+
+            Library library = new Library("Центральная библиотека", "ул. Ленина, 1");
+            library.AddBook(warAndPeace);
+
+            tolstoy.DisplayInfo();
+            Console.WriteLine();
+            warAndPeace.DisplayInfo();
+            Console.WriteLine();
+            library.DisplayAllBooks();
+            Console.WriteLine();
+
+            // Школьная система
+            Console.WriteLine("=== СИСТЕМА УПРАВЛЕНИЯ ШКОЛОЙ ===\n");
+
+            Student student = new Student("S001", "Иван", "Иванов", new DateTime(2005, 5, 15));
+            Teacher teacher = new Teacher("T001", "Мария", "Петрова", "Математика");
+            Course mathCourse = new Course("MATH101", "Математика", 5);
+
+            teacher.AssignToCourse(mathCourse);
+            student.EnrollInCourse(mathCourse);
+
+            student.DisplayInfo();
+            Console.WriteLine();
+            teacher.DisplayInfo();
+            Console.WriteLine();
+            mathCourse.DisplayInfo();
+            Console.WriteLine();
+
+            // E-commerce система
+            Console.WriteLine("=== E-COMMERCE СИСТЕМА ===\n");
+
+            Customer customer = new Customer("C001", "Петр", "Сидоров", "petr@example.com", "ул. Пушкина, 10");
+            Product laptop = new Product("P001", "Ноутбук", "Игровой ноутбук", 50000, 10, "Электроника");
+            Order order = new Order("O001", customer);
+
+            order.AddItem(laptop, 1);
+            customer.PlaceOrder(order);
+
+            customer.DisplayInfo();
+            Console.WriteLine();
+            laptop.DisplayInfo();
+            Console.WriteLine();
+            order.DisplayInfo();
+            Console.WriteLine();
+
+            // Система управления проектами
+            Console.WriteLine("=== СИСТЕМА УПРАВЛЕНИЯ ПРОЕКТАМИ ===\n");
+
+            Team devTeam = new Team("T001", "Команда разработки");
+            TeamMember developer = new TeamMember("M001", "Алексей", "Козлов", "Разработчик", "alex@company.com");
+            Project websiteProject = new Project("P001", "Разработка сайта", "Создание корпоративного сайта",
+                new DateTime(2024, 1, 1), new DateTime(2024, 6, 1));
+            Task designTask = new Task("T001", "Дизайн макетов", "Создать дизайн главной страницы",
+                new DateTime(2024, 1, 15), "Высокий");
+
+            devTeam.AddMember(developer);
+            websiteProject.AddTask(designTask);
+            developer.AssignTask(designTask);
+
+            devTeam.DisplayInfo();
+            Console.WriteLine();
+            developer.DisplayInfo();
+            Console.WriteLine();
+            websiteProject.DisplayInfo();
+            Console.WriteLine();
+            designTask.DisplayInfo();
+            Console.WriteLine();
+
+            // Больничная система
+            Console.WriteLine("=== СИСТЕМА УПРАВЛЕНИЯ БОЛЬНИЦЕЙ ===\n");
+
+            Doctor doctor = new Doctor("D001", "Анна", "Смирнова", "Кардиолог", "+7-999-123-45-67");
+            Patient patient = new Patient("P001", "Сергей", "Васильев", new DateTime(1980, 3, 20), "+7-999-765-43-21", "ул. Гагарина, 5");
+            Appointment appointment = new Appointment("A001", new DateTime(2024, 1, 20, 10, 0, 0), "Консультация", doctor, patient);
+
+            doctor.DisplayInfo();
+            Console.WriteLine();
+            patient.DisplayInfo();
+            Console.WriteLine();
+            appointment.DisplayInfo();
+            Console.WriteLine();
+
+            // Игровая система
+            Console.WriteLine("=== ИГРОВАЯ СИСТЕМА ===\n");
+
+            Character warrior = new Character("Артур", "Воин");
+            Item sword = new Item("I001", "Стальной меч", "Оружие", 100, 5, true);
+            warrior.Inventory.AddItem(sword);
+
+            warrior.DisplayInfo();
+            Console.WriteLine();
+            sword.DisplayInfo();
+            Console.WriteLine();
+            warrior.Inventory.DisplayInfo();
+            Console.WriteLine();
+
+            // Система бронирования отелей
+            Console.WriteLine("=== СИСТЕМА БРОНИРОВАНИЯ ОТЕЛЕЙ ===\n");
+
+            Hotel grandHotel = new Hotel("H001", "Гранд Отель", "ул. Центральная, 1", "+7-495-123-45-67", 5);
+            Room deluxeRoom = new Room("101", "Делюкс", 5000, 2, "WiFi, TV, Кондиционер");
+            Booking booking = new Booking("B001", new DateTime(2024, 2, 1), new DateTime(2024, 2, 5), 2, "Иван Иванов", "ivan@example.com", deluxeRoom);
+
+            grandHotel.AddRoom(deluxeRoom);
+
+            grandHotel.DisplayInfo();
+            Console.WriteLine();
+            deluxeRoom.DisplayInfo();
+            Console.WriteLine();
+            booking.DisplayInfo();
+        }
+    }
+}

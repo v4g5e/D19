@@ -1,0 +1,643 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp6
+{
+    partial class Validator
+    {
+        private string data;
+
+        public Validator(string inputData)
+        {
+            data = inputData;
+        }
+
+        public bool Validate()
+        {
+            Console.WriteLine("Начало валидации...");
+            OnValidation();
+            Console.WriteLine("Валидация завершена.");
+            return true;
+        }
+
+        partial void OnValidation();
+    }
+
+    partial class Validator
+    {
+        partial void OnValidation()
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                Console.WriteLine("Ошибка: Данные не могут быть пустыми");
+            }
+            else if (data.Length < 3)
+            {
+                Console.WriteLine("Ошибка: Данные слишком короткие");
+            }
+            else
+            {
+                Console.WriteLine("Данные прошли валидацию успешно");
+            }
+        }
+    }
+
+    // 2. Частичный метод OnError() в классе Logger
+    partial class Logger
+    {
+        public void LogError(string message)
+        {
+            Console.WriteLine($"Логирование ошибки: {message}");
+            OnError(message);
+        }
+
+        partial void OnError(string message);
+    }
+
+    partial class Logger
+    {
+        partial void OnError(string message)
+        {
+            Console.WriteLine($"Дополнительная обработка ошибки: {message}");
+            System.Diagnostics.Debug.WriteLine($"DEBUG ERROR: {message}");
+        }
+    }
+
+    // 3. Частичный метод OnPropertyChanged() в классе NotificationObject
+    partial class NotificationObject
+    {
+        private string propertyName;
+
+        public string PropertyName
+        {
+            get { return propertyName; }
+            set
+            {
+                if (propertyName != value)
+                {
+                    propertyName = value;
+                    OnPropertyChanged(propertyName);
+                }
+            }
+        }
+
+        partial void OnPropertyChanged(string propertyName);
+    }
+
+    partial class NotificationObject
+    {
+        partial void OnPropertyChanged(string propertyName)
+        {
+            Console.WriteLine($"Свойство '{propertyName}' было изменено");
+        }
+    }
+
+    // 4. Частичный метод OnInitialize() в классе Application
+    partial class Application
+    {
+        public void Initialize()
+        {
+            Console.WriteLine("Инициализация приложения...");
+            OnInitialize();
+            Console.WriteLine("Приложение инициализировано");
+        }
+
+        partial void OnInitialize();
+    }
+
+    partial class Application
+    {
+        partial void OnInitialize()
+        {
+            Console.WriteLine("Выполнение дополнительной инициализации...");
+            InitializeServices();
+            LoadConfiguration();
+        }
+
+        private void InitializeServices()
+        {
+            Console.WriteLine("Инициализация сервисов...");
+        }
+
+        private void LoadConfiguration()
+        {
+            Console.WriteLine("Загрузка конфигурации...");
+        }
+    }
+
+    // 5. Частичный метод OnDataLoaded() в классе DataManager
+    partial class DataManager
+    {
+        public void LoadData(string dataSource)
+        {
+            Console.WriteLine($"Загрузка данных из {dataSource}...");
+            OnDataLoaded(dataSource);
+        }
+
+        partial void OnDataLoaded(string dataSource);
+    }
+
+    partial class DataManager
+    {
+        partial void OnDataLoaded(string dataSource)
+        {
+            Console.WriteLine($"Данные из {dataSource} успешно загружены");
+            ValidateLoadedData();
+            UpdateCache();
+        }
+
+        private void ValidateLoadedData()
+        {
+            Console.WriteLine("Валидация загруженных данных...");
+        }
+
+        private void UpdateCache()
+        {
+            Console.WriteLine("Обновление кэша...");
+        }
+    }
+
+    // 6. Частичный метод OnStateChanged() в классе StateMachine
+    partial class StateMachine
+    {
+        private string currentState;
+
+        public string CurrentState
+        {
+            get { return currentState; }
+            set
+            {
+                string previousState = currentState;
+                currentState = value;
+                OnStateChanged(previousState, currentState);
+            }
+        }
+
+        partial void OnStateChanged(string previousState, string newState);
+    }
+
+    partial class StateMachine
+    {
+        partial void OnStateChanged(string previousState, string newState)
+        {
+            Console.WriteLine($"Состояние изменено: {previousState} -> {newState}");
+            if (newState == "Error")
+            {
+                HandleErrorState();
+            }
+        }
+
+        private void HandleErrorState()
+        {
+            Console.WriteLine("Обработка состояния ошибки...");
+        }
+    }
+
+    // 7. Частичный метод OnBeforeSave() в классе Entity
+    partial class Entity
+    {
+        public void Save()
+        {
+            Console.WriteLine("Сохранение сущности...");
+            OnBeforeSave();
+            Console.WriteLine("Сущность сохранена");
+        }
+
+        partial void OnBeforeSave();
+    }
+
+    partial class Entity
+    {
+        partial void OnBeforeSave()
+        {
+            Console.WriteLine("Подготовка к сохранению...");
+            ValidateEntity();
+            UpdateTimestamps();
+        }
+
+        private void ValidateEntity()
+        {
+            Console.WriteLine("Валидация сущности перед сохранением...");
+        }
+
+        private void UpdateTimestamps()
+        {
+            Console.WriteLine("Обновление временных меток...");
+        }
+    }
+
+    // 8. Частичный метод OnAfterDelete() в классе Repository
+    partial class Repository
+    {
+        public void Delete(int id)
+        {
+            Console.WriteLine($"Удаление записи с ID: {id}");
+            OnAfterDelete(id);
+        }
+
+        partial void OnAfterDelete(int id);
+    }
+
+    partial class Repository
+    {
+        partial void OnAfterDelete(int id)
+        {
+            Console.WriteLine($"Запись с ID {id} удалена");
+            ClearCacheForId(id);
+            LogDeletion(id);
+        }
+
+        private void ClearCacheForId(int id)
+        {
+            Console.WriteLine($"Очистка кэша для ID: {id}");
+        }
+
+        private void LogDeletion(int id)
+        {
+            Console.WriteLine($"Логирование удаления записи: {id}");
+        }
+    }
+
+    // 9. Частичный метод OnProcessing() в классе DataProcessor
+    partial class DataProcessor
+    {
+        public void ProcessData(string data)
+        {
+            Console.WriteLine("Обработка данных...");
+            OnProcessing(data);
+            Console.WriteLine("Обработка завершена");
+        }
+
+        partial void OnProcessing(string data);
+    }
+
+    partial class DataProcessor
+    {
+        partial void OnProcessing(string data)
+        {
+            Console.WriteLine($"Дополнительная обработка данных: {data}");
+            TransformData(data);
+            AnalyzeData(data);
+        }
+
+        private void TransformData(string data)
+        {
+            Console.WriteLine("Трансформация данных...");
+        }
+
+        private void AnalyzeData(string data)
+        {
+            Console.WriteLine("Анализ данных...");
+        }
+    }
+
+    // 10. Частичный метод OnConnectionOpened() в классе Connection
+    partial class Connection
+    {
+        public void Open()
+        {
+            Console.WriteLine("Открытие соединения...");
+            OnConnectionOpened();
+        }
+
+        partial void OnConnectionOpened();
+    }
+
+    partial class Connection
+    {
+        partial void OnConnectionOpened()
+        {
+            Console.WriteLine("Соединение успешно открыто");
+            InitializeSession();
+            UpdateConnectionStats();
+        }
+
+        private void InitializeSession()
+        {
+            Console.WriteLine("Инициализация сессии...");
+        }
+
+        private void UpdateConnectionStats()
+        {
+            Console.WriteLine("Обновление статистики соединений...");
+        }
+    }
+
+    // 11. Частичный метод OnAuthenticationFailed() в классе Authenticator
+    partial class Authenticator
+    {
+        public bool Authenticate(string username, string password)
+        {
+            bool isAuthenticated = CheckCredentials(username, password);
+
+            if (!isAuthenticated)
+            {
+                OnAuthenticationFailed(username);
+            }
+
+            return isAuthenticated;
+        }
+
+        private bool CheckCredentials(string username, string password)
+        {
+
+            return username == "admin" && password == "password";
+        }
+
+        partial void OnAuthenticationFailed(string username);
+    }
+
+    partial class Authenticator
+    {
+        partial void OnAuthenticationFailed(string username)
+        {
+            Console.WriteLine($"Ошибка аутентификации для пользователя: {username}");
+            LogFailedAttempt(username);
+            CheckSecurityPolicy(username);
+        }
+
+        private void LogFailedAttempt(string username)
+        {
+            Console.WriteLine($"Логирование неудачной попытки входа: {username}");
+        }
+
+        private void CheckSecurityPolicy(string username)
+        {
+            Console.WriteLine("Проверка политики безопасности...");
+        }
+    }
+
+    // 12. Частичный метод OnCacheExpired() в классе Cache
+    partial class Cache
+    {
+        public void CheckExpiration(string key)
+        {
+            Console.WriteLine($"Проверка истечения срока кэша для ключа: {key}");
+            bool isExpired = IsCacheExpired(key);
+
+            if (isExpired)
+            {
+                OnCacheExpired(key);
+            }
+        }
+
+        private bool IsCacheExpired(string key)
+        {
+            return key.Length > 5;
+        }
+
+        partial void OnCacheExpired(string key);
+    }
+
+    partial class Cache
+    {
+        partial void OnCacheExpired(string key)
+        {
+            Console.WriteLine($"Кэш для ключа '{key}' истек");
+            ClearExpiredCache(key);
+            ReloadData(key);
+        }
+
+        private void ClearExpiredCache(string key)
+        {
+            Console.WriteLine($"Очистка просроченного кэша: {key}");
+        }
+
+        private void ReloadData(string key)
+        {
+            Console.WriteLine($"Перезагрузка данных для ключа: {key}");
+        }
+    }
+
+    // 13. Частичный метод OnRetry() в классе RetryPolicy
+    partial class RetryPolicy
+    {
+        public void ExecuteWithRetry(Action action, int maxRetries)
+        {
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    action();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Попытка {attempt} не удалась: {ex.Message}");
+                    if (attempt < maxRetries)
+                    {
+                        OnRetry(attempt, maxRetries, ex);
+                    }
+                }
+            }
+        }
+
+        partial void OnRetry(int currentAttempt, int maxAttempts, Exception exception);
+    }
+
+    partial class RetryPolicy
+    {
+        partial void OnRetry(int currentAttempt, int maxAttempts, Exception exception)
+        {
+            Console.WriteLine($"Повторная попытка {currentAttempt} из {maxAttempts}");
+            WaitBeforeRetry(currentAttempt);
+            LogRetryAttempt(currentAttempt, exception);
+        }
+
+        private void WaitBeforeRetry(int attempt)
+        {
+            int delay = attempt * 1000;
+            Console.WriteLine($"Ожидание {delay} мс перед повторной попыткой...");
+            System.Threading.Thread.Sleep(delay);
+        }
+
+        private void LogRetryAttempt(int attempt, Exception exception)
+        {
+            Console.WriteLine($"Логирование повторной попытки {attempt}: {exception.Message}");
+        }
+    }
+
+    // 14. Частичный метод OnTimeout() в классе Request
+    partial class Request
+    {
+        public void ExecuteWithTimeout(Action action, TimeSpan timeout)
+        {
+            Console.WriteLine($"Выполнение с таймаутом {timeout.TotalSeconds} сек...");
+            try
+            {
+                action();
+            }
+            catch (TimeoutException ex)
+            {
+                OnTimeout(timeout, ex);
+                throw;
+            }
+        }
+
+        partial void OnTimeout(TimeSpan timeout, TimeoutException exception);
+    }
+
+    partial class Request
+    {
+        partial void OnTimeout(TimeSpan timeout, TimeoutException exception)
+        {
+            Console.WriteLine($"Таймаут запроса: {timeout.TotalSeconds} сек");
+            CancelPendingOperations();
+            NotifyAboutTimeout();
+        }
+
+        private void CancelPendingOperations()
+        {
+            Console.WriteLine("Отмена ожидающих операций...");
+        }
+
+        private void NotifyAboutTimeout()
+        {
+            Console.WriteLine("Уведомление о таймауте...");
+        }
+    }
+
+    // 15. Частичный метод OnCompleted() в классе AsyncTask
+    partial class AsyncTask
+    {
+        public async System.Threading.Tasks.Task ExecuteAsync()
+        {
+            Console.WriteLine("Запуск асинхронной задачи...");
+            await System.Threading.Tasks.Task.Delay(1000);
+            OnCompleted();
+            Console.WriteLine("Асинхронная задача завершена");
+        }
+
+        partial void OnCompleted();
+    }
+
+    partial class AsyncTask
+    {
+        partial void OnCompleted()
+        {
+            Console.WriteLine("Дополнительные действия после завершения задачи");
+
+            CleanupResources();
+            UpdateTaskStatistics();
+        }
+
+        private void CleanupResources()
+        {
+            Console.WriteLine("Очистка ресурсов...");
+        }
+
+        private void UpdateTaskStatistics()
+        {
+            Console.WriteLine("Обновление статистики задач...");
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("1. Тестирование Validator:");
+            var validator = new Validator("test");
+            validator.Validate();
+            Console.WriteLine();
+
+            Console.WriteLine("2. Тестирование Logger:");
+            var logger = new Logger();
+            logger.LogError("Тестовая ошибка");
+            Console.WriteLine();
+
+            Console.WriteLine("3. Тестирование NotificationObject:");
+            var notifier = new NotificationObject();
+            notifier.PropertyName = "NewValue";
+            Console.WriteLine();
+
+            Console.WriteLine("4. Тестирование Application:");
+            var app = new Application();
+            app.Initialize();
+            Console.WriteLine();
+
+            Console.WriteLine("5. Тестирование DataManager:");
+            var dataManager = new DataManager();
+            dataManager.LoadData("database");
+            Console.WriteLine();
+
+            Console.WriteLine("6. Тестирование StateMachine:");
+            var stateMachine = new StateMachine();
+            stateMachine.CurrentState = "Loading";
+            stateMachine.CurrentState = "Ready";
+            stateMachine.CurrentState = "Error";
+            Console.WriteLine();
+
+            Console.WriteLine("7. Тестирование Entity:");
+            var entity = new Entity();
+            entity.Save();
+            Console.WriteLine();
+
+            Console.WriteLine("8. Тестирование Repository:");
+            var repository = new Repository();
+            repository.Delete(1);
+            Console.WriteLine();
+
+            Console.WriteLine("9. Тестирование DataProcessor:");
+            var processor = new DataProcessor();
+            processor.ProcessData("sample data");
+            Console.WriteLine();
+
+            Console.WriteLine("10. Тестирование Connection:");
+            var connection = new Connection();
+            connection.Open();
+            Console.WriteLine();
+
+            Console.WriteLine("11. Тестирование Authenticator:");
+            var authenticator = new Authenticator();
+            bool authResult = authenticator.Authenticate("user", "wrongpass");
+            Console.WriteLine($"Результат аутентификации: {authResult}");
+            Console.WriteLine();
+
+            Console.WriteLine("12. Тестирование Cache:");
+            var cache = new Cache();
+            cache.CheckExpiration("long_key_name");
+            Console.WriteLine();
+
+            Console.WriteLine("13. Тестирование RetryPolicy:");
+            var retryPolicy = new RetryPolicy();
+            int attemptCount = 0;
+            retryPolicy.ExecuteWithRetry(() =>
+            {
+                attemptCount++;
+                if (attemptCount < 3)
+                {
+                    throw new Exception("Временная ошибка");
+                }
+                Console.WriteLine("Операция успешно выполнена");
+            }, 3);
+            Console.WriteLine();
+
+            Console.WriteLine("14. Тестирование Request:");
+            var request = new Request();
+            try
+            {
+                request.ExecuteWithTimeout(() =>
+                {
+                    System.Threading.Thread.Sleep(2000);
+                }, TimeSpan.FromSeconds(1));
+            }
+            catch (TimeoutException ex)
+            {
+                Console.WriteLine($"Поймано исключение: {ex.Message}");
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("15. Тестирование AsyncTask:");
+            var asyncTask = new AsyncTask();
+            asyncTask.ExecuteAsync().Wait();
+            Console.WriteLine();
+
+            Console.WriteLine("Все тесты завершены!");
+        }
+    }
+}

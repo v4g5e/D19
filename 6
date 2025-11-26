@@ -1,0 +1,983 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp6
+{
+    class Person
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public string Position { get; set; }
+
+        public Person Manager { get; set; }
+        public List<Person> Subordinates { get; set; }
+
+        public Person(string name, int age, string position)
+        {
+            Name = name;
+            Age = age;
+            Position = position;
+            Subordinates = new List<Person>();
+        }
+
+        public void SetManager(Person manager)
+        {
+            Manager = manager;
+            if (manager != null && !manager.Subordinates.Contains(this))
+            {
+                manager.Subordinates.Add(this);
+            }
+        }
+
+        public void AddSubordinate(Person subordinate)
+        {
+            if (!Subordinates.Contains(subordinate))
+            {
+                Subordinates.Add(subordinate);
+                subordinate.Manager = this;
+            }
+        }
+
+        public void DisplayHierarchy(int level = 0)
+        {
+            string indent = new string(' ', level * 2);
+            Console.WriteLine($"{indent}- {Name} ({Position})");
+
+            foreach (var subordinate in Subordinates)
+            {
+                subordinate.DisplayHierarchy(level + 1);
+            }
+        }
+
+        public void DisplayManagerChain()
+        {
+            Console.Write($"Цепочка руководителей для {Name}: ");
+
+            Person current = this;
+            while (current != null)
+            {
+                Console.Write(current.Name);
+                current = current.Manager;
+                if (current != null) Console.Write(" -> ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    class Node
+    {
+        public string Data { get; set; }
+        public List<Node> Children { get; set; }
+        public Node Parent { get; set; }
+
+        public Node(string data)
+        {
+            Data = data;
+            Children = new List<Node>();
+        }
+
+        public void AddChild(Node child)
+        {
+            Children.Add(child);
+            child.Parent = this;
+        }
+
+        public void DisplayTree(int level = 0)
+        {
+            string indent = new string(' ', level * 2);
+            Console.WriteLine($"{indent}{Data}");
+
+            foreach (var child in Children)
+            {
+                child.DisplayTree(level + 1);
+            }
+        }
+
+        public int GetDepth()
+        {
+            int depth = 0;
+            Node current = this;
+            while (current.Parent != null)
+            {
+                depth++;
+                current = current.Parent;
+            }
+            return depth;
+        }
+    }
+
+    class Employee
+    {
+        public string Name { get; set; }
+        public string Department { get; set; }
+        public decimal Salary { get; set; }
+
+        public Employee Manager { get; set; }
+        public List<Employee> TeamMembers { get; set; }
+
+        public Employee(string name, string department, decimal salary)
+        {
+            Name = name;
+            Department = department;
+            Salary = salary;
+            TeamMembers = new List<Employee>();
+        }
+
+        public void SetManager(Employee manager)
+        {
+            Manager = manager;
+            if (manager != null && !manager.TeamMembers.Contains(this))
+            {
+                manager.TeamMembers.Add(this);
+            }
+        }
+
+        public void DisplayTeam()
+        {
+            Console.WriteLine($"Команда {Name}:");
+            if (TeamMembers.Count == 0)
+            {
+                Console.WriteLine("  Нет членов команды");
+                return;
+            }
+
+            foreach (var member in TeamMembers)
+            {
+                Console.WriteLine($"  - {member.Name} ({member.Department})");
+            }
+        }
+    }
+
+    class Category
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        public Category ParentCategory { get; set; }
+        public List<Category> SubCategories { get; set; }
+
+        public Category(string name, string description)
+        {
+            Name = name;
+            Description = description;
+            SubCategories = new List<Category>();
+        }
+
+        public void SetParent(Category parent)
+        {
+            ParentCategory = parent;
+            if (parent != null && !parent.SubCategories.Contains(this))
+            {
+                parent.SubCategories.Add(this);
+            }
+        }
+
+        public void DisplayCategoryTree(int level = 0)
+        {
+            string indent = new string(' ', level * 2);
+            Console.WriteLine($"{indent}{Name} - {Description}");
+
+            foreach (var subCategory in SubCategories)
+            {
+                subCategory.DisplayCategoryTree(level + 1);
+            }
+        }
+    }
+
+    class TreeNode
+    {
+        public int Value { get; set; }
+        public List<TreeNode> Children { get; set; }
+
+        public TreeNode(int value)
+        {
+            Value = value;
+            Children = new List<TreeNode>();
+        }
+
+        public void AddChild(TreeNode child)
+        {
+            Children.Add(child);
+        }
+
+        public void DisplayTree(string prefix = "", bool isLast = true)
+        {
+            Console.Write(prefix);
+            Console.Write(isLast ? "└── " : "├── ");
+            Console.WriteLine(Value);
+
+            string newPrefix = prefix + (isLast ? "    " : "│   ");
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                bool lastChild = (i == Children.Count - 1);
+                Children[i].DisplayTree(newPrefix, lastChild);
+            }
+        }
+
+        public int CountNodes()
+        {
+            int count = 1;
+            foreach (var child in Children)
+            {
+                count += child.CountNodes();
+            }
+            return count;
+        }
+    }
+
+    class LinkedListNode
+    {
+        public int Data { get; set; }
+
+        public LinkedListNode Next { get; set; }
+
+        public LinkedListNode(int data)
+        {
+            Data = data;
+        }
+
+        public void DisplayList()
+        {
+            LinkedListNode current = this;
+            Console.Write("Список: ");
+            while (current != null)
+            {
+                Console.Write(current.Data);
+                if (current.Next != null) Console.Write(" -> ");
+                current = current.Next;
+            }
+            Console.WriteLine();
+        }
+
+        public void AddToEnd(int data)
+        {
+            LinkedListNode current = this;
+            while (current.Next != null)
+            {
+                current = current.Next;
+            }
+            current.Next = new LinkedListNode(data);
+        }
+
+        public int Count()
+        {
+            int count = 0;
+            LinkedListNode current = this;
+            while (current != null)
+            {
+                count++;
+                current = current.Next;
+            }
+            return count;
+        }
+    }
+
+    class Student
+    {
+        public string Name { get; set; }
+        public int StudentID { get; set; }
+
+        private List<Course> enrolledCourses = new List<Course>();
+
+        public Student(string name, int id)
+        {
+            Name = name;
+            StudentID = id;
+        }
+
+        public void EnrollInCourse(Course course)
+        {
+            if (!enrolledCourses.Contains(course))
+            {
+                enrolledCourses.Add(course);
+                course.AddStudent(this);
+            }
+        }
+
+        public void DisplayCourses()
+        {
+            Console.WriteLine($"\nКурсы студента {Name}:");
+            if (enrolledCourses.Count == 0)
+            {
+                Console.WriteLine("  Нет активных курсов");
+                return;
+            }
+
+            foreach (Course course in enrolledCourses)
+            {
+                Console.WriteLine($"  - {course}");
+            }
+        }
+
+        public int GetTotalCredits()
+        {
+            int total = 0;
+            foreach (Course course in enrolledCourses)
+            {
+                total += course.Credits;
+            }
+            return total;
+        }
+    }
+
+    class Course
+    {
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public int Credits { get; set; }
+
+        private List<Student> enrolledStudents = new List<Student>();
+
+        public Course(string name, string code, int credits)
+        {
+            Name = name;
+            Code = code;
+            Credits = credits;
+        }
+
+        public void AddStudent(Student student)
+        {
+            if (!enrolledStudents.Contains(student))
+            {
+                enrolledStudents.Add(student);
+            }
+        }
+
+        public void DisplayStudents()
+        {
+            Console.WriteLine($"\nСтуденты курса {Name}:");
+            if (enrolledStudents.Count == 0)
+            {
+                Console.WriteLine("  Нет зарегистрированных студентов");
+                return;
+            }
+
+            foreach (Student student in enrolledStudents)
+            {
+                Console.WriteLine($"  - {student.Name} (ID: {student.StudentID})");
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{Name} ({Code}) - {Credits} кредитов";
+        }
+    }
+
+    class Doctor
+    {
+        public string Name { get; set; }
+        public string Specialization { get; set; }
+        public string LicenseNumber { get; set; }
+
+        public List<Patient> Patients { get; set; }
+
+        public Doctor(string name, string specialization, string licenseNumber)
+        {
+            Name = name;
+            Specialization = specialization;
+            LicenseNumber = licenseNumber;
+            Patients = new List<Patient>();
+        }
+
+        public void AddPatient(Patient patient)
+        {
+            if (!Patients.Contains(patient))
+            {
+                Patients.Add(patient);
+                patient.AssignDoctor(this);
+            }
+        }
+
+        public void DisplayPatients()
+        {
+            Console.WriteLine($"\nПациенты доктора {Name} ({Specialization}):");
+            foreach (var patient in Patients)
+            {
+                Console.WriteLine($"  - {patient.Name} ({patient.MedicalCondition})");
+            }
+        }
+    }
+
+    class Patient
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public string MedicalCondition { get; set; }
+
+        public Doctor AttendingDoctor { get; set; }
+
+        public Patient(string name, int age, string medicalCondition)
+        {
+            Name = name;
+            Age = age;
+            MedicalCondition = medicalCondition;
+        }
+
+        public void AssignDoctor(Doctor doctor)
+        {
+            AttendingDoctor = doctor;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Пациент: {Name}, Возраст: {Age}, Диагноз: {MedicalCondition}");
+            if (AttendingDoctor != null)
+            {
+                Console.WriteLine($"  Лечащий врач: {AttendingDoctor.Name} ({AttendingDoctor.Specialization})");
+            }
+        }
+    }
+
+    class Author
+    {
+        public string Name { get; set; }
+        public string Nationality { get; set; }
+
+        public List<Book> Books { get; set; }
+
+        public Author(string name, string nationality)
+        {
+            Name = name;
+            Nationality = nationality;
+            Books = new List<Book>();
+        }
+
+        public void AddBook(Book book)
+        {
+            if (!Books.Contains(book))
+            {
+                Books.Add(book);
+                book.Author = this;
+            }
+        }
+
+        public void DisplayBooks()
+        {
+            Console.WriteLine($"\nКниги автора {Name}:");
+            foreach (var book in Books)
+            {
+                Console.WriteLine($"  - {book.Title} ({book.PublicationYear})");
+            }
+        }
+    }
+
+    class Book
+    {
+        public string Title { get; set; }
+        public int PublicationYear { get; set; }
+        public string ISBN { get; set; }
+
+        public Author Author { get; set; }
+
+        public Book(string title, int publicationYear, string isbn)
+        {
+            Title = title;
+            PublicationYear = publicationYear;
+            ISBN = isbn;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Книга: {Title}");
+            Console.WriteLine($"  ISBN: {ISBN}, Год: {PublicationYear}");
+            if (Author != null)
+            {
+                Console.WriteLine($"  Автор: {Author.Name} ({Author.Nationality})");
+            }
+        }
+    }
+
+    class Teacher
+    {
+        public string Name { get; set; }
+        public string Subject { get; set; }
+        public int YearsOfExperience { get; set; }
+
+        public List<Class> Classes { get; set; }
+
+        public Teacher(string name, string subject, int yearsOfExperience)
+        {
+            Name = name;
+            Subject = subject;
+            YearsOfExperience = yearsOfExperience;
+            Classes = new List<Class>();
+        }
+
+        public void AssignToClass(Class classObj)
+        {
+            if (!Classes.Contains(classObj))
+            {
+                Classes.Add(classObj);
+                classObj.Teacher = this;
+            }
+        }
+
+        public void DisplayClasses()
+        {
+            Console.WriteLine($"\nКлассы учителя {Name} ({Subject}):");
+            foreach (var classObj in Classes)
+            {
+                Console.WriteLine($"  - {classObj.ClassName} ({classObj.Grade} класс)");
+            }
+        }
+    }
+
+    class Class
+    {
+        public string ClassName { get; set; }
+        public int Grade { get; set; }
+        public string Room { get; set; }
+
+        public Teacher Teacher { get; set; }
+
+        public Class(string className, int grade, string room)
+        {
+            ClassName = className;
+            Grade = grade;
+            Room = room;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Класс: {ClassName}");
+            Console.WriteLine($"  {Grade} класс, Кабинет: {Room}");
+            if (Teacher != null)
+            {
+                Console.WriteLine($"  Учитель: {Teacher.Name} ({Teacher.Subject})");
+            }
+        }
+    }
+
+    class Company
+    {
+        public string Name { get; set; }
+        public string Industry { get; set; }
+        public string Location { get; set; }
+
+        public List<CompanyEmployee> Employees { get; set; }
+
+        public Company(string name, string industry, string location)
+        {
+            Name = name;
+            Industry = industry;
+            Location = location;
+            Employees = new List<CompanyEmployee>();
+        }
+
+        public void HireEmployee(CompanyEmployee employee)
+        {
+            if (!Employees.Contains(employee))
+            {
+                Employees.Add(employee);
+                employee.Company = this;
+            }
+        }
+
+        public void DisplayEmployees()
+        {
+            Console.WriteLine($"\nСотрудники компании {Name}:");
+            foreach (var employee in Employees)
+            {
+                Console.WriteLine($"  - {employee.Name} ({employee.Position})");
+            }
+        }
+    }
+
+    class CompanyEmployee
+    {
+        public string Name { get; set; }
+        public string Position { get; set; }
+        public decimal Salary { get; set; }
+
+        public Company Company { get; set; }
+
+        public CompanyEmployee(string name, string position, decimal salary)
+        {
+            Name = name;
+            Position = position;
+            Salary = salary;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Сотрудник: {Name}");
+            Console.WriteLine($"  Должность: {Position}, Зарплата: {Salary:C}");
+            if (Company != null)
+            {
+                Console.WriteLine($"  Компания: {Company.Name} ({Company.Industry})");
+            }
+        }
+    }
+
+    class Library
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+
+        public List<LibraryBook> Books { get; set; }
+
+        public Library(string name, string address)
+        {
+            Name = name;
+            Address = address;
+            Books = new List<LibraryBook>();
+        }
+
+        public void AddBook(LibraryBook book)
+        {
+            if (!Books.Contains(book))
+            {
+                Books.Add(book);
+                book.Library = this;
+            }
+        }
+
+        public void DisplayBooks()
+        {
+            Console.WriteLine($"\nКниги в библиотеке {Name}:");
+            foreach (var book in Books)
+            {
+                Console.WriteLine($"  - {book.Title} - {book.Author}");
+            }
+        }
+    }
+
+    class LibraryBook
+    {
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public string ISBN { get; set; }
+        public bool IsAvailable { get; set; }
+
+        public Library Library { get; set; }
+
+        public LibraryBook(string title, string author, string isbn)
+        {
+            Title = title;
+            Author = author;
+            ISBN = isbn;
+            IsAvailable = true;
+        }
+
+        public void DisplayInfo()
+        {
+            string availability = IsAvailable ? "Доступна" : "Выдана";
+            Console.WriteLine($"Книга: {Title}");
+            Console.WriteLine($"  Автор: {Author}, ISBN: {ISBN}, Статус: {availability}");
+            if (Library != null)
+            {
+                Console.WriteLine($"  Библиотека: {Library.Name}");
+            }
+        }
+    }
+
+    class Team
+    {
+        public string Name { get; set; }
+        public string Sport { get; set; }
+        public string City { get; set; }
+
+        public List<Player> Players { get; set; }
+
+        public Team(string name, string sport, string city)
+        {
+            Name = name;
+            Sport = sport;
+            City = city;
+            Players = new List<Player>();
+        }
+
+        public void AddPlayer(Player player)
+        {
+            if (!Players.Contains(player))
+            {
+                Players.Add(player);
+                player.Team = this;
+            }
+        }
+
+        public void DisplayRoster()
+        {
+            Console.WriteLine($"\nСостав команды {Name} ({Sport}):");
+            foreach (var player in Players)
+            {
+                Console.WriteLine($"  - {player.Name} (#{player.Number}) - {player.Position}");
+            }
+        }
+    }
+
+    class Player
+    {
+        public string Name { get; set; }
+        public int Number { get; set; }
+        public string Position { get; set; }
+
+        public Team Team { get; set; }
+
+        public Player(string name, int number, string position)
+        {
+            Name = name;
+            Number = number;
+            Position = position;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Игрок: {Name}");
+            Console.WriteLine($"  Номер: #{Number}, Позиция: {Position}");
+            if (Team != null)
+            {
+                Console.WriteLine($"  Команда: {Team.Name} ({Team.City})");
+            }
+        }
+    }
+
+    class Order
+    {
+        public string OrderId { get; set; }
+        public DateTime OrderDate { get; set; }
+        public string CustomerName { get; set; }
+
+        public List<OrderProduct> Products { get; set; }
+
+        public Order(string orderId, string customerName)
+        {
+            OrderId = orderId;
+            CustomerName = customerName;
+            OrderDate = DateTime.Now;
+            Products = new List<OrderProduct>();
+        }
+
+        public void AddProduct(OrderProduct product, int quantity = 1)
+        {
+            Products.Add(product);
+        }
+
+        public decimal CalculateTotal()
+        {
+            decimal total = 0;
+            foreach (var product in Products)
+            {
+                total += product.Price;
+            }
+            return total;
+        }
+
+        public void DisplayOrder()
+        {
+            Console.WriteLine($"\nЗаказ #{OrderId}");
+            Console.WriteLine($"Клиент: {CustomerName}, Дата: {OrderDate:dd.MM.yyyy}");
+            Console.WriteLine("Товары:");
+            foreach (var product in Products)
+            {
+                Console.WriteLine($"  - {product.Name}: {product.Price:C}");
+            }
+            Console.WriteLine($"Итого: {CalculateTotal():C}");
+        }
+    }
+
+    class OrderProduct
+    {
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string Category { get; set; }
+
+        public OrderProduct(string name, decimal price, string category)
+        {
+            Name = name;
+            Price = price;
+            Category = category;
+        }
+    }
+
+    class Project
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime Deadline { get; set; }
+
+        public List<Developer> Developers { get; set; }
+
+        public Project(string name, string description, DateTime deadline)
+        {
+            Name = name;
+            Description = description;
+            Deadline = deadline;
+            Developers = new List<Developer>();
+        }
+
+        public void AssignDeveloper(Developer developer)
+        {
+            if (!Developers.Contains(developer))
+            {
+                Developers.Add(developer);
+                developer.Projects.Add(this);
+            }
+        }
+
+        public void DisplayTeam()
+        {
+            Console.WriteLine($"\nРазработчики проекта {Name}:");
+            foreach (var developer in Developers)
+            {
+                Console.WriteLine($"  - {developer.Name} ({developer.Specialization})");
+            }
+        }
+    }
+
+    class Developer
+    {
+        public string Name { get; set; }
+        public string Specialization { get; set; }
+        public int ExperienceYears { get; set; }
+
+        public List<Project> Projects { get; set; }
+
+        public Developer(string name, string specialization, int experienceYears)
+        {
+            Name = name;
+            Specialization = specialization;
+            ExperienceYears = experienceYears;
+            Projects = new List<Project>();
+        }
+
+        public void DisplayProjects()
+        {
+            Console.WriteLine($"\nПроекты разработчика {Name}:");
+            foreach (var project in Projects)
+            {
+                Console.WriteLine($"  - {project.Name} (до {project.Deadline:dd.MM.yyyy})");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("=== ДЕМОНСТРАЦИЯ ОТНОШЕНИЙ МЕЖДУ КЛАССАМИ ===\n");
+
+            Console.WriteLine("=== САМОАССОЦИАЦИЯ ===\n");
+
+            Person ceo = new Person("Иван Сидоров", 45, "Генеральный директор");
+            Person cto = new Person("Петр Иванов", 38, "Технический директор");
+            Person devManager = new Person("Мария Петрова", 35, "Менеджер разработки");
+            Person seniorDev = new Person("Алексей Козлов", 32, "Старший разработчик");
+            Person juniorDev = new Person("Сергей Смирнов", 25, "Младший разработчик");
+
+            cto.SetManager(ceo);
+            devManager.SetManager(cto);
+            seniorDev.SetManager(devManager);
+            juniorDev.SetManager(devManager);
+
+            Console.WriteLine("Организационная структура:");
+            ceo.DisplayHierarchy();
+            Console.WriteLine();
+            juniorDev.DisplayManagerChain();
+            Console.WriteLine();
+
+            Node root = new Node("Корень");
+            Node child1 = new Node("Дочерний 1");
+            Node child2 = new Node("Дочерний 2");
+            Node grandchild1 = new Node("Внук 1");
+            Node grandchild2 = new Node("Внук 2");
+
+            root.AddChild(child1);
+            root.AddChild(child2);
+            child1.AddChild(grandchild1);
+            child1.AddChild(grandchild2);
+
+            Console.WriteLine("Древовидная структура:");
+            root.DisplayTree();
+            Console.WriteLine($"Глубина узла 'Внук 1': {grandchild1.GetDepth()}");
+            Console.WriteLine();
+
+            LinkedListNode head = new LinkedListNode(1);
+            head.AddToEnd(2);
+            head.AddToEnd(3);
+            head.AddToEnd(4);
+            head.DisplayList();
+            Console.WriteLine($"Длина списка: {head.Count()}");
+            Console.WriteLine();
+
+            Console.WriteLine("=== АССОЦИАЦИЯ ===\n");
+
+            Course math = new Course("Математика", "MATH101", 3);
+            Course english = new Course("Английский язык", "ENG101", 3);
+            Course history = new Course("История", "HIST101", 2);
+            Course physics = new Course("Физика", "PHYS101", 4);
+
+            Student student1 = new Student("Иван Петров", 101);
+            Student student2 = new Student("Мария Сидорова", 102);
+
+            student1.EnrollInCourse(math);
+            student1.EnrollInCourse(english);
+            student1.EnrollInCourse(physics);
+
+            student2.EnrollInCourse(math);
+            student2.EnrollInCourse(history);
+            student2.EnrollInCourse(english);
+
+            student1.DisplayCourses();
+            Console.WriteLine($"Всего кредитов: {student1.GetTotalCredits()}");
+
+            student2.DisplayCourses();
+            Console.WriteLine($"Всего кредитов: {student2.GetTotalCredits()}");
+
+            math.DisplayStudents();
+            Console.WriteLine();
+
+            Doctor cardiologist = new Doctor("Анна Смирнова", "Кардиолог", "LIC12345");
+            Patient patient1 = new Patient("Петр Васильев", 65, "Гипертония");
+            Patient patient2 = new Patient("Ольга Ковалева", 72, "Аритмия");
+
+            cardiologist.AddPatient(patient1);
+            cardiologist.AddPatient(patient2);
+
+            patient1.DisplayInfo();
+            patient2.DisplayInfo();
+            cardiologist.DisplayPatients();
+            Console.WriteLine();
+
+            Author tolstoy = new Author("Лев Толстой", "Русский");
+            Book warAndPeace = new Book("Война и мир", 1869, "978-5-389-00001-1");
+            Book annaKarenina = new Book("Анна Каренина", 1877, "978-5-389-00002-8");
+
+            tolstoy.AddBook(warAndPeace);
+            tolstoy.AddBook(annaKarenina);
+
+            warAndPeace.DisplayInfo();
+            annaKarenina.DisplayInfo();
+            tolstoy.DisplayBooks();
+            Console.WriteLine();
+
+            Team basketballTeam = new Team("Спартак", "Баскетбол", "Москва");
+            Player player1 = new Player("Алексей Иванов", 23, "Защитник");
+            Player player2 = new Player("Дмитрий Петров", 15, "Нападающий");
+
+            basketballTeam.AddPlayer(player1);
+            basketballTeam.AddPlayer(player2);
+
+            player1.DisplayInfo();
+            player2.DisplayInfo();
+            basketballTeam.DisplayRoster();
+            Console.WriteLine();
+
+            Project website = new Project("Корпоративный сайт", "Разработка веб-сайта", new DateTime(2024, 6, 1));
+            Developer frontendDev = new Developer("Екатерина Волкова", "Frontend", 5);
+            Developer backendDev = new Developer("Михаил Орлов", "Backend", 7);
+
+            website.AssignDeveloper(frontendDev);
+            website.AssignDeveloper(backendDev);
+
+            website.DisplayTeam();
+            frontendDev.DisplayProjects();
+        }
+    }
+}

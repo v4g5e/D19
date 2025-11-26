@@ -1,0 +1,642 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp6
+{
+    class Circle
+    {
+        private readonly double radius;
+
+        public double Radius
+        {
+            get { return radius; }
+        }
+
+        public Circle(double r)
+        {
+            if (r <= 0)
+                throw new ArgumentException("Радиус должен быть положительным!");
+
+            radius = r;
+        }
+
+        public double GetArea()
+        {
+            return Math.PI * radius * radius;
+        }
+
+        public double GetPerimeter()
+        {
+            return 2 * Math.PI * radius;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Радиус: {Radius}");
+            Console.WriteLine($"Площадь: {GetArea():F2}");
+            Console.WriteLine($"Периметр: {GetPerimeter():F2}");
+        }
+    }
+
+    class Point
+    {
+        private readonly double x;
+        private readonly double y;
+
+        public double X { get { return x; } }
+        public double Y { get { return y; } }
+
+        public Point(double x, double y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double GetDistanceToOrigin()
+        {
+            return Math.Sqrt(x * x + y * y);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Точка: ({X}, {Y})");
+            Console.WriteLine($"Расстояние до начала координат: {GetDistanceToOrigin():F2}");
+        }
+    }
+
+    class Color
+    {
+        private readonly int red;
+        private readonly int green;
+        private readonly int blue;
+
+        public int Red { get { return red; } }
+        public int Green { get { return green; } }
+        public int Blue { get { return blue; } }
+
+        public Color(int r, int g, int b)
+        {
+            if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
+                throw new ArgumentException("Значения цвета должны быть в диапазоне 0-255!");
+
+            red = r;
+            green = g;
+            blue = b;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Цвет: RGB({Red}, {Green}, {Blue})");
+        }
+    }
+
+    class Vector
+    {
+        private readonly double magnitude;
+
+        public double Magnitude { get { return magnitude; } }
+
+        public Vector(double magnitude)
+        {
+            if (magnitude < 0)
+                throw new ArgumentException("Модуль вектора не может быть отрицательным!");
+
+            this.magnitude = magnitude;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Модуль вектора: {Magnitude}");
+        }
+    }
+
+    class Complex
+    {
+        private readonly double real;
+        private readonly double imaginary;
+
+        public double Real { get { return real; } }
+        public double Imaginary { get { return imaginary; } }
+
+        public Complex(double real, double imaginary)
+        {
+            this.real = real;
+            this.imaginary = imaginary;
+        }
+
+        public double GetMagnitude()
+        {
+            return Math.Sqrt(real * real + imaginary * imaginary);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Комплексное число: {Real} + {Imaginary}i");
+            Console.WriteLine($"Модуль: {GetMagnitude():F2}");
+        }
+    }
+
+    class Fraction
+    {
+        private readonly int numerator;
+        private readonly int denominator;
+
+        public int Numerator { get { return numerator; } }
+        public int Denominator { get { return denominator; } }
+
+        public Fraction(int numerator, int denominator)
+        {
+            if (denominator == 0)
+                throw new ArgumentException("Знаменатель не может быть равен нулю!");
+
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+
+        public double GetDecimalValue()
+        {
+            return (double)numerator / denominator;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Дробь: {Numerator}/{Denominator}");
+            Console.WriteLine($"Десятичное значение: {GetDecimalValue():F2}");
+        }
+    }
+
+    class Date
+    {
+        private readonly int day;
+        private readonly int month;
+        private readonly int year;
+
+        public int Day { get { return day; } }
+        public int Month { get { return month; } }
+        public int Year { get { return year; } }
+
+        public Date(int day, int month, int year)
+        {
+            if (!IsValidDate(day, month, year))
+                throw new ArgumentException("Некорректная дата!");
+
+            this.day = day;
+            this.month = month;
+            this.year = year;
+        }
+
+        private bool IsValidDate(int day, int month, int year)
+        {
+            if (month < 1 || month > 12) return false;
+            if (day < 1 || day > DateTime.DaysInMonth(year, month)) return false;
+            return true;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Дата: {Day:00}.{Month:00}.{Year}");
+        }
+    }
+
+    class Time
+    {
+        private readonly int hours;
+        private readonly int minutes;
+        private readonly int seconds;
+
+        public int Hours { get { return hours; } }
+        public int Minutes { get { return minutes; } }
+        public int Seconds { get { return seconds; } }
+
+        public Time(int hours, int minutes, int seconds)
+        {
+            if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59)
+                throw new ArgumentException("Некорректное время!");
+
+            this.hours = hours;
+            this.minutes = minutes;
+            this.seconds = seconds;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Время: {Hours:00}:{Minutes:00}:{Seconds:00}");
+        }
+    }
+
+    class Money
+    {
+        private readonly decimal amount;
+        private readonly string currency;
+
+        public decimal Amount { get { return amount; } }
+        public string Currency { get { return currency; } }
+
+        public Money(decimal amount, string currency)
+        {
+            if (amount < 0)
+                throw new ArgumentException("Сумма не может быть отрицательной!");
+
+            this.amount = amount;
+            this.currency = currency ?? throw new ArgumentNullException(nameof(currency));
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Деньги: {Amount} {Currency}");
+        }
+    }
+
+    class Range
+    {
+        private readonly double min;
+        private readonly double max;
+
+        public double Min { get { return min; } }
+        public double Max { get { return max; } }
+
+        public Range(double min, double max)
+        {
+            if (min > max)
+                throw new ArgumentException("Min не может быть больше Max!");
+
+            this.min = min;
+            this.max = max;
+        }
+
+        public double GetLength()
+        {
+            return max - min;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Диапазон: [{Min}, {Max}]");
+            Console.WriteLine($"Длина диапазона: {GetLength()}");
+        }
+    }
+
+    class Rectangle
+    {
+        private readonly double width;
+        private readonly double height;
+
+        public double Width { get { return width; } }
+        public double Height { get { return height; } }
+
+        public Rectangle(double width, double height)
+        {
+            if (width <= 0 || height <= 0)
+                throw new ArgumentException("Ширина и высота должны быть положительными!");
+
+            this.width = width;
+            this.height = height;
+        }
+
+        public double GetArea()
+        {
+            return width * height;
+        }
+
+        public double GetPerimeter()
+        {
+            return 2 * (width + height);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Прямоугольник: {Width} x {Height}");
+            Console.WriteLine($"Площадь: {GetArea():F2}");
+            Console.WriteLine($"Периметр: {GetPerimeter():F2}");
+        }
+    }
+
+    class Triangle
+    {
+        private readonly double sideA;
+        private readonly double sideB;
+        private readonly double sideC;
+
+        public double SideA { get { return sideA; } }
+        public double SideB { get { return sideB; } }
+        public double SideC { get { return sideC; } }
+
+        public Triangle(double a, double b, double c)
+        {
+            if (!IsValidTriangle(a, b, c))
+                throw new ArgumentException("Треугольник с такими сторонами не существует!");
+
+            sideA = a;
+            sideB = b;
+            sideC = c;
+        }
+
+        private bool IsValidTriangle(double a, double b, double c)
+        {
+            return a > 0 && b > 0 && c > 0 &&
+                   a + b > c && a + c > b && b + c > a;
+        }
+
+        public double GetPerimeter()
+        {
+            return sideA + sideB + sideC;
+        }
+
+        public double GetArea()
+        {
+            double p = GetPerimeter() / 2;
+            return Math.Sqrt(p * (p - sideA) * (p - sideB) * (p - sideC));
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Треугольник со сторонами: {SideA}, {SideB}, {SideC}");
+            Console.WriteLine($"Периметр: {GetPerimeter():F2}");
+            Console.WriteLine($"Площадь: {GetArea():F2}");
+        }
+    }
+
+    class Coordinates
+    {
+        private readonly double latitude;
+        private readonly double longitude;
+
+        public double Latitude { get { return latitude; } }
+        public double Longitude { get { return longitude; } }
+
+        public Coordinates(double latitude, double longitude)
+        {
+            if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
+                throw new ArgumentException("Некорректные координаты!");
+
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Координаты: {Latitude:F6}°N, {Longitude:F6}°E");
+        }
+    }
+
+    class Version
+    {
+        private readonly int major;
+        private readonly int minor;
+        private readonly int patch;
+
+        public int Major { get { return major; } }
+        public int Minor { get { return minor; } }
+        public int Patch { get { return patch; } }
+
+        public Version(int major, int minor, int patch)
+        {
+            if (major < 0 || minor < 0 || patch < 0)
+                throw new ArgumentException("Версия не может быть отрицательной!");
+
+            this.major = major;
+            this.minor = minor;
+            this.patch = patch;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Версия: {Major}.{Minor}.{Patch}");
+        }
+    }
+
+    class Interval
+    {
+        private readonly DateTime start;
+        private readonly DateTime end;
+
+        public DateTime Start { get { return start; } }
+        public DateTime End { get { return end; } }
+
+        public Interval(DateTime start, DateTime end)
+        {
+            if (start >= end)
+                throw new ArgumentException("Начало интервала должно быть раньше конца!");
+
+            this.start = start;
+            this.end = end;
+        }
+
+        public TimeSpan GetDuration()
+        {
+            return end - start;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Интервал: с {Start:dd.MM.yyyy HH:mm} по {End:dd.MM.yyyy HH:mm}");
+            Console.WriteLine($"Продолжительность: {GetDuration().TotalHours:F2} часов");
+        }
+    }
+
+    class Matrix
+    {
+        private readonly int order;
+
+        public int Order { get { return order; } }
+
+        public Matrix(int order)
+        {
+            if (order <= 0)
+                throw new ArgumentException("Порядок матрицы должен быть положительным!");
+
+            this.order = order;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Матрица порядка: {Order}x{Order}");
+        }
+    }
+
+    class Person
+    {
+        private readonly DateTime birthDate;
+
+        public DateTime BirthDate { get { return birthDate; } }
+
+        public Person(DateTime birthDate)
+        {
+            if (birthDate > DateTime.Now)
+                throw new ArgumentException("Дата рождения не может быть в будущем!");
+
+            this.birthDate = birthDate;
+        }
+
+        public int GetAge()
+        {
+            var today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+            if (birthDate.Date > today.AddYears(-age)) age--;
+            return age;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Дата рождения: {BirthDate:dd.MM.yyyy}");
+            Console.WriteLine($"Возраст: {GetAge()} лет");
+        }
+    }
+
+    class Employee
+    {
+        private readonly string employeeID;
+
+        public string EmployeeID { get { return employeeID; } }
+
+        public Employee(string employeeID)
+        {
+            this.employeeID = employeeID ?? throw new ArgumentNullException(nameof(employeeID));
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"ID сотрудника: {EmployeeID}");
+        }
+    }
+
+    class Document
+    {
+        private readonly string documentID;
+        private readonly DateTime createdDate;
+
+        public string DocumentID { get { return documentID; } }
+        public DateTime CreatedDate { get { return createdDate; } }
+
+        public Document(string documentID, DateTime createdDate)
+        {
+            this.documentID = documentID ?? throw new ArgumentNullException(nameof(documentID));
+            this.createdDate = createdDate;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Документ ID: {DocumentID}");
+            Console.WriteLine($"Дата создания: {CreatedDate:dd.MM.yyyy HH:mm}");
+        }
+    }
+
+    class ISBN
+    {
+        private readonly string code;
+
+        public string Code { get { return code; } }
+
+        public ISBN(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                throw new ArgumentException("ISBN код не может быть пустым!");
+
+            this.code = code;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"ISBN: {Code}");
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            try
+            {
+                Circle circle = new Circle(5);
+                circle.DisplayInfo();
+                Console.WriteLine();
+
+                Point point = new Point(3, 4);
+                point.DisplayInfo();
+                Console.WriteLine();
+
+                Color color = new Color(255, 128, 0);
+                color.DisplayInfo();
+                Console.WriteLine();
+
+                Vector vector = new Vector(10.5);
+                vector.DisplayInfo();
+                Console.WriteLine();
+
+                Complex complex = new Complex(3, 4);
+                complex.DisplayInfo();
+                Console.WriteLine();
+
+                Fraction fraction = new Fraction(3, 4);
+                fraction.DisplayInfo();
+                Console.WriteLine();
+
+                Date date = new Date(15, 12, 2023);
+                date.DisplayInfo();
+                Console.WriteLine();
+
+                Time time = new Time(14, 30, 45);
+                time.DisplayInfo();
+                Console.WriteLine();
+
+                Money money = new Money(1500.75m, "RUB");
+                money.DisplayInfo();
+                Console.WriteLine();
+
+                Range range = new Range(0, 100);
+                range.DisplayInfo();
+                Console.WriteLine();
+
+                Rectangle rectangle = new Rectangle(10, 5);
+                rectangle.DisplayInfo();
+                Console.WriteLine();
+
+                Triangle triangle = new Triangle(3, 4, 5);
+                triangle.DisplayInfo();
+                Console.WriteLine();
+
+                Coordinates coordinates = new Coordinates(55.7558, 37.6173);
+                coordinates.DisplayInfo();
+                Console.WriteLine();
+
+                Version version = new Version(1, 2, 3);
+                version.DisplayInfo();
+                Console.WriteLine();
+
+                Interval interval = new Interval(
+                    new DateTime(2023, 1, 1, 10, 0, 0),
+                    new DateTime(2023, 1, 1, 18, 0, 0)
+                );
+                interval.DisplayInfo();
+                Console.WriteLine();
+
+                Matrix matrix = new Matrix(3);
+                matrix.DisplayInfo();
+                Console.WriteLine();
+
+                Person person = new Person(new DateTime(1990, 5, 15));
+                person.DisplayInfo();
+                Console.WriteLine();
+
+                Employee employee = new Employee("EMP-001");
+                employee.DisplayInfo();
+                Console.WriteLine();
+
+                Document document = new Document("DOC-001", DateTime.Now);
+                document.DisplayInfo();
+                Console.WriteLine();
+
+                ISBN isbn = new ISBN("978-5-8459-2054-2");
+                isbn.DisplayInfo();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
+    }
+}

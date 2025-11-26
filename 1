@@ -1,0 +1,584 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp6
+{
+    partial class Person
+    {
+        private string name;
+        private int age;
+        private string email;
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+        public int Age
+        {
+            get { return age; }
+            set { age = value; }
+        }
+
+        public string Email
+        {
+            get { return email; }
+            set { email = value; }
+        }
+    }
+
+    partial class Person
+    {
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Имя: {Name}, Возраст: {Age}, Email: {Email}");
+        }
+
+        public bool IsAdult()
+        {
+            return Age >= 18;
+        }
+
+        public void SendEmail(string message)
+        {
+            if (!string.IsNullOrEmpty(Email))
+            {
+                Console.WriteLine($"Отправка email на {Email}: {message}");
+            }
+        }
+    }
+
+    // 2. Частичный класс Calculator
+    partial class Calculator
+    {
+        public double Add(double a, double b)
+        {
+            return a + b;
+        }
+
+        public int Add(int a, int b)
+        {
+            return a + b;
+        }
+    }
+
+    partial class Calculator
+    {
+        public double Subtract(double a, double b)
+        {
+            return a - b;
+        }
+
+        public int Subtract(int a, int b)
+        {
+            return a - b;
+        }
+    }
+
+    // 3. Частичный класс Customer
+    partial class Customer
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public decimal Balance { get; set; }
+    }
+
+    partial class Customer
+    {
+        public bool IsPremium()
+        {
+            return Balance > 1000;
+        }
+
+        public void AddToBalance(decimal amount)
+        {
+            Balance += amount;
+            Console.WriteLine($"Новый баланс: {Balance}");
+        }
+
+        public string GetCustomerInfo()
+        {
+            return $"Клиент {Id}: {Name} ({Email}) - Баланс: {Balance}";
+        }
+    }
+
+    // 4. Частичный класс Product
+    partial class Product
+    {
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+        public decimal Discount { get; set; }
+    }
+
+    partial class Product
+    {
+        public decimal CalculateTotalPrice()
+        {
+            return (Price - Discount) * Quantity;
+        }
+
+        public decimal CalculatePriceWithTax(decimal taxRate)
+        {
+            return CalculateTotalPrice() * (1 + taxRate);
+        }
+
+        public bool IsInStock()
+        {
+            return Quantity > 0;
+        }
+    }
+
+    // 5. Частичный класс Student
+    partial class Student
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int StudentId { get; set; }
+        public string Group { get; set; }
+        public double AverageGrade { get; set; }
+    }
+
+    partial class Student
+    {
+        public string GetFullName()
+        {
+            return $"{FirstName} {LastName}";
+        }
+
+        public string GetStudentInfo()
+        {
+            return $"Студент {StudentId}: {GetFullName()} - Группа: {Group}, Средний балл: {AverageGrade}";
+        }
+
+        public bool IsExcellentStudent()
+        {
+            return AverageGrade >= 4.5;
+        }
+    }
+
+    // 6. Частичный класс Employee
+    partial class Employee
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Position { get; set; }
+        public decimal BaseSalary { get; set; }
+        public int ExperienceYears { get; set; }
+    }
+
+    partial class Employee
+    {
+        public decimal CalculateSalary()
+        {
+            decimal experienceBonus = BaseSalary * 0.05m * ExperienceYears;
+            return BaseSalary + experienceBonus;
+        }
+
+        public decimal CalculateAnnualSalary()
+        {
+            return CalculateSalary() * 12;
+        }
+
+        public string GetEmployeeInfo()
+        {
+            return $"{Position} {Name} (Опыт: {ExperienceYears} лет) - Зарплата: {CalculateSalary()}";
+        }
+    }
+
+    // 7. Частичный класс Rectangle
+    partial class Rectangle
+    {
+        public double Width { get; set; }
+        public double Height { get; set; }
+    }
+
+    partial class Rectangle
+    {
+        public double CalculateArea()
+        {
+            return Width * Height;
+        }
+
+        public double CalculatePerimeter()
+        {
+            return 2 * (Width + Height);
+        }
+
+        public bool IsSquare()
+        {
+            return Width == Height;
+        }
+    }
+
+    // 8. Частичный класс BankAccount
+    partial class BankAccount
+    {
+        public string AccountNumber { get; set; }
+        public string Owner { get; set; }
+        private decimal balance;
+
+        public decimal Balance
+        {
+            get { return balance; }
+            private set { balance = value; }
+        }
+    }
+
+    partial class BankAccount
+    {
+        public void Deposit(decimal amount)
+        {
+            if (amount > 0)
+            {
+                Balance += amount;
+                LogTransaction($"Пополнение: +{amount}, Баланс: {Balance}");
+            }
+        }
+
+        public bool Withdraw(decimal amount)
+        {
+            if (amount > 0 && Balance >= amount)
+            {
+                Balance -= amount;
+                LogTransaction($"Снятие: -{amount}, Баланс: {Balance}");
+                return true;
+            }
+            return false;
+        }
+
+        private void LogTransaction(string message)
+        {
+            Console.WriteLine($"[Банковский счет {AccountNumber}] {message}");
+        }
+    }
+
+    // 9. Частичный класс Book 
+    partial class Book
+    {
+        public string ISBN { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public int Year { get; set; }
+        public string Genre { get; set; }
+    }
+
+    partial class Book
+    {
+        public bool MatchesSearch(string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+                return false;
+
+            return (Title != null && Title.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                   (Author != null && Author.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                   (Genre != null && Genre.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        public string GetBookInfo()
+        {
+            return $"{Title} автор {Author} ({Year}) - ISBN: {ISBN}, Жанр: {Genre}";
+        }
+
+        public bool IsClassic()
+        {
+            return Year < 1950;
+        }
+    }
+
+    // 10. Частичный класс Car
+    partial class Car
+    {
+        public string Make { get; set; }
+        public string Model { get; set; }
+        public int Year { get; set; }
+        public double EngineSize { get; set; }
+        public string Color { get; set; }
+    }
+
+    partial class Car
+    {
+        public void StartEngine()
+        {
+            Console.WriteLine($"{Make} {Model} двигатель запущен");
+        }
+
+        public void StopEngine()
+        {
+            Console.WriteLine($"{Make} {Model} двигатель остановлен");
+        }
+
+        public string GetCarInfo()
+        {
+            return $"{Year} {Make} {Model} ({Color}) - {EngineSize}L";
+        }
+
+        public bool IsVintage()
+        {
+            return Year < 1990;
+        }
+    }
+
+    // 11. Частичный класс House
+    partial class House
+    {
+        public string Address { get; set; }
+        public double Area { get; set; }
+        public int Rooms { get; set; }
+        public int Floors { get; set; }
+    }
+
+    partial class House
+    {
+        public double CalculatePricePerSquareMeter(double basePrice)
+        {
+            return basePrice * Area;
+        }
+
+        public bool IsMultiStory()
+        {
+            return Floors > 1;
+        }
+
+        public string GetHouseInfo()
+        {
+            return $"{Address} - {Area}м², {Rooms} комнат, {Floors} этажей";
+        }
+    }
+
+    // 12. Частичный класс Game
+    partial class Game
+    {
+        public string Name { get; set; }
+        public string Genre { get; set; }
+        public int MaxPlayers { get; set; }
+        private bool isInitialized = false;
+    }
+
+    partial class Game
+    {
+        public void Initialize()
+        {
+            Console.WriteLine($"Инициализация игры: {Name}");
+            isInitialized = true;
+        }
+
+        public void Start()
+        {
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+            Console.WriteLine($"Запуск игры: {Name}");
+        }
+
+        public void Pause()
+        {
+            Console.WriteLine($"Игра {Name} приостановлена");
+        }
+
+        public void End()
+        {
+            Console.WriteLine($"Игра {Name} завершена");
+        }
+    }
+
+    // 13. Частичный класс Database
+    partial class Database
+    {
+        private string connectionString;
+        private bool isConnected = false;
+    }
+
+    partial class Database
+    {
+        public void Connect(string connectionString)
+        {
+            this.connectionString = connectionString;
+            isConnected = true;
+            Console.WriteLine("База данных подключена");
+        }
+
+        public void Disconnect()
+        {
+            isConnected = false;
+            Console.WriteLine("База данных отключена");
+        }
+
+        public void ExecuteQuery(string query)
+        {
+            if (!isConnected)
+            {
+                Console.WriteLine("Ошибка: База данных не подключена");
+                return;
+            }
+            Console.WriteLine($"Выполнение запроса: {query}");
+        }
+    }
+
+    // 14. Частичный класс Logger
+    partial class Logger
+    {
+        private string logFileName = "log.txt";
+    }
+
+    partial class Logger
+    {
+        public void LogToFile(string message)
+        {
+            try
+            {
+                File.AppendAllText(logFileName, $"{DateTime.Now}: {message}\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка записи в файл лога: {ex.Message}");
+            }
+        }
+    }
+
+    partial class Logger
+    {
+        public void LogToConsole(string message)
+        {
+            Console.WriteLine($"[ЛОГ] {DateTime.Now}: {message}");
+        }
+    }
+
+    // 15. Частичный класс Configuration
+    partial class Configuration
+    {
+        private string configFile = "config.txt";
+        private Dictionary<string, string> settings;
+    }
+
+    partial class Configuration
+    {
+        public void LoadConfiguration()
+        {
+            settings = new Dictionary<string, string>();
+
+            if (File.Exists(configFile))
+            {
+                var lines = File.ReadAllLines(configFile);
+                foreach (var line in lines)
+                {
+                    var parts = line.Split('=');
+                    if (parts.Length == 2)
+                    {
+                        settings[parts[0]] = parts[1];
+                    }
+                }
+            }
+            Console.WriteLine("Конфигурация загружена");
+        }
+
+        public void SaveConfiguration()
+        {
+            using (var writer = new StreamWriter(configFile))
+            {
+                foreach (var setting in settings)
+                {
+                    writer.WriteLine($"{setting.Key}={setting.Value}");
+                }
+            }
+            Console.WriteLine("Конфигурация сохранена");
+        }
+
+        public string GetSetting(string key)
+        {
+            return settings.ContainsKey(key) ? settings[key] : null;
+        }
+
+        public void SetSetting(string key, string value)
+        {
+            settings[key] = value;
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            var person = new Person { Name = "Иван", Age = 25, Email = "ivan@test.com" };
+            person.DisplayInfo();
+            Console.WriteLine($"Совершеннолетний: {person.IsAdult()}\n");
+
+            var calc = new Calculator();
+            Console.WriteLine($"5 + 3 = {calc.Add(5, 3)}");
+            Console.WriteLine($"5 - 3 = {calc.Subtract(5, 3)}\n");
+
+            var customer = new Customer { Id = 1, Name = "Алиса", Email = "alice@test.com", Balance = 1500 };
+            Console.WriteLine(customer.GetCustomerInfo());
+            Console.WriteLine($"Премиум клиент: {customer.IsPremium()}\n");
+
+            var product = new Product { Name = "Ноутбук", Price = 1000, Quantity = 2, Discount = 100 };
+            Console.WriteLine($"Общая цена: {product.CalculateTotalPrice()}");
+            Console.WriteLine($"В наличии: {product.IsInStock()}\n");
+
+            var student = new Student { FirstName = "Петр", LastName = "Иванов", StudentId = 123, Group = "CS-101", AverageGrade = 4.7 };
+            Console.WriteLine(student.GetStudentInfo());
+            Console.WriteLine($"Отличник: {student.IsExcellentStudent()}\n");
+
+            var employee = new Employee { Id = 1, Name = "Мария", Position = "Разработчик", BaseSalary = 50000, ExperienceYears = 3 };
+            Console.WriteLine(employee.GetEmployeeInfo());
+            Console.WriteLine($"Годовая зарплата: {employee.CalculateAnnualSalary()}\n");
+
+            var rect = new Rectangle { Width = 5, Height = 10 };
+            Console.WriteLine($"Площадь: {rect.CalculateArea()}, Периметр: {rect.CalculatePerimeter()}");
+            Console.WriteLine($"Квадрат: {rect.IsSquare()}\n");
+
+            var account = new BankAccount { AccountNumber = "12345", Owner = "Дмитрий" };
+            account.Deposit(1000);
+            account.Withdraw(300);
+            Console.WriteLine($"Финальный баланс: {account.Balance}\n");
+
+            var book = new Book { ISBN = "123", Title = "Программирование на C#", Author = "Иван Петров", Year = 2020, Genre = "Программирование" };
+            Console.WriteLine(book.GetBookInfo());
+            Console.WriteLine($"Соответствует поиску 'программирование': {book.MatchesSearch("программирование")}");
+            Console.WriteLine($"Соответствует поиску 'петров': {book.MatchesSearch("петров")}");
+            Console.WriteLine($"Классика: {book.IsClassic()}\n");
+
+            var car = new Car { Make = "Toyota", Model = "Camry", Year = 2022, EngineSize = 2.5, Color = "Синий" };
+            Console.WriteLine(car.GetCarInfo());
+            car.StartEngine();
+            Console.WriteLine($"Винтажный: {car.IsVintage()}\n");
+
+            var house = new House { Address = "ул. Главная, 123", Area = 150.5, Rooms = 4, Floors = 2 };
+            Console.WriteLine(house.GetHouseInfo());
+            Console.WriteLine($"Многоэтажный: {house.IsMultiStory()}\n");
+
+            var game = new Game { Name = "Приключенческая Игра", Genre = "RPG", MaxPlayers = 4 };
+            game.Start();
+            game.Pause();
+            Console.WriteLine();
+
+            var database = new Database();
+            database.Connect("server=localhost;database=test;");
+            database.ExecuteQuery("SELECT * FROM users");
+            database.Disconnect();
+            Console.WriteLine();
+
+            var logger = new Logger();
+            logger.LogToConsole("Тестовое сообщение в консоль");
+            logger.LogToFile("Тестовое сообщение в файл");
+            Console.WriteLine();
+
+            var config = new Configuration();
+            config.LoadConfiguration();
+            config.SetSetting("Language", "Russian");
+            config.SetSetting("Theme", "Dark");
+            config.SaveConfiguration();
+            Console.WriteLine($"Настройка языка: {config.GetSetting("Language")}");
+            Console.WriteLine();
+
+            Console.WriteLine("Все тесты завершены!");
+        }
+    }
+}

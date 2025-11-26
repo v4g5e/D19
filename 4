@@ -1,0 +1,1270 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp6
+{
+    class BankAccount
+    {
+        private decimal balance;
+        private string accountNumber;
+        private string ownerName;
+
+        public BankAccount(string accountNumber, string ownerName, decimal initialBalance = 0)
+        {
+            if (string.IsNullOrWhiteSpace(accountNumber))
+                throw new ArgumentException("Номер счета не может быть пустым!");
+
+            if (string.IsNullOrWhiteSpace(ownerName))
+                throw new ArgumentException("Имя владельца не может быть пустым!");
+
+            this.accountNumber = accountNumber;
+            this.ownerName = ownerName;
+
+            if (initialBalance < 0)
+                throw new ArgumentException("Начальный баланс не может быть отрицательным!");
+
+            balance = initialBalance;
+        }
+
+        public void Deposit(decimal amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Сумма депозита должна быть положительной!");
+
+            balance += amount;
+            Console.WriteLine($"Внесено: {amount}. Новый баланс: {balance}");
+        }
+
+        public void Withdraw(decimal amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Сумма снятия должна быть положительной!");
+
+            if (amount > balance)
+                throw new InvalidOperationException("Недостаточно средств на счете!");
+
+            balance -= amount;
+            Console.WriteLine($"Снято: {amount}. Новый баланс: {balance}");
+        }
+
+        public decimal GetBalance()
+        {
+            return balance;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Счет: {accountNumber}");
+            Console.WriteLine($"Владелец: {ownerName}");
+            Console.WriteLine($"Баланс: {balance}");
+        }
+    }
+
+    class Person
+    {
+        private string firstName;
+        private string lastName;
+        private int age;
+        private string email;
+
+        public string FirstName
+        {
+            get { return firstName; }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Имя не может быть пустым!");
+                firstName = value;
+            }
+        }
+
+        public string LastName
+        {
+            get { return lastName; }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Фамилия не может быть пустой!");
+                lastName = value;
+            }
+        }
+
+        public int Age
+        {
+            get { return age; }
+            set
+            {
+                if (value < 0 || value > 150)
+                    throw new ArgumentException("Возраст должен быть от 0 до 150!");
+                age = value;
+            }
+        }
+
+        public string Email
+        {
+            get { return email; }
+            set
+            {
+                if (!IsValidEmail(value))
+                    throw new ArgumentException("Некорректный email!");
+                email = value;
+            }
+        }
+
+        public Person(string firstName, string lastName, int age, string email = null)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Age = age;
+            if (email != null) Email = email;
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            return !string.IsNullOrWhiteSpace(email) &&
+                   email.Contains("@") &&
+                   email.Contains(".") &&
+                   email.Length > 5;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Человек: {FirstName} {LastName}");
+            Console.WriteLine($"Возраст: {Age}");
+            if (!string.IsNullOrEmpty(Email))
+                Console.WriteLine($"Email: {Email}");
+        }
+    }
+
+    class Password
+    {
+        private string password;
+
+        public string PasswordValue
+        {
+            get { return "***"; } 
+            set
+            {
+                if (!IsValidPassword(value))
+                    throw new ArgumentException("Пароль не соответствует требованиям безопасности!");
+                password = value;
+            }
+        }
+
+        public Password(string password)
+        {
+            PasswordValue = password;
+        }
+
+        private bool IsValidPassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                return false;
+
+            bool hasUpper = false;
+            bool hasLower = false;
+            bool hasDigit = false;
+
+            foreach (char c in password)
+            {
+                if (char.IsUpper(c)) hasUpper = true;
+                if (char.IsLower(c)) hasLower = true;
+                if (char.IsDigit(c)) hasDigit = true;
+            }
+
+            return hasUpper && hasLower && hasDigit;
+        }
+
+        public bool Verify(string inputPassword)
+        {
+            return password == inputPassword;
+        }
+
+        public void DisplayStrength()
+        {
+            Console.WriteLine("Пароль соответствует требованиям безопасности");
+        }
+    }
+
+    class Email
+    {
+        private string email;
+
+        public string EmailAddress
+        {
+            get { return email; }
+            set
+            {
+                if (!IsValidEmail(value))
+                    throw new ArgumentException("Некорректный email адрес!");
+                email = value;
+            }
+        }
+
+        public Email(string email)
+        {
+            EmailAddress = email;
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            string[] parts = email.Split('@');
+            if (parts.Length != 2)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(parts[0]) || string.IsNullOrWhiteSpace(parts[1]))
+                return false;
+
+            if (!parts[1].Contains("."))
+                return false;
+
+            return true;
+        }
+
+        public string GetDomain()
+        {
+            return email.Split('@')[1];
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Email: {email}");
+            Console.WriteLine($"Домен: {GetDomain()}");
+        }
+    }
+
+    class Temperature
+    {
+        private double celsius;
+
+        public double Celsius
+        {
+            get { return celsius; }
+            set { celsius = value; }
+        }
+
+        public double Fahrenheit
+        {
+            get { return celsius * 9 / 5 + 32; }
+            set { celsius = (value - 32) * 5 / 9; }
+        }
+
+        public double Kelvin
+        {
+            get { return celsius + 273.15; }
+            set { celsius = value - 273.15; }
+        }
+
+        public Temperature(double celsius)
+        {
+            this.celsius = celsius;
+        }
+
+        public void DisplayAll()
+        {
+            Console.WriteLine($"Температура: {Celsius:F2}°C = {Fahrenheit:F2}°F = {Kelvin:F2}K");
+        }
+    }
+
+    // ==================== НАСЛЕДОВАНИЕ ====================
+
+    class Animal
+    {
+        protected string name;
+        protected int age;
+
+        public Animal(string name, int age)
+        {
+            this.name = name;
+            this.age = age;
+        }
+
+        public virtual void MakeSound()
+        {
+            Console.WriteLine("Издаёт звук");
+        }
+
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine($"Имя: {name}, Возраст: {age}");
+        }
+    }
+
+    class Dog : Animal
+    {
+        private string breed;
+
+        public Dog(string name, int age, string breed) : base(name, age)
+        {
+            this.breed = breed;
+        }
+
+        public override void MakeSound()
+        {
+            Console.WriteLine("Гав! Гав!");
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Порода: {breed}");
+        }
+
+        public void Fetch()
+        {
+            Console.WriteLine($"{name} приносит мяч!");
+        }
+    }
+
+    class Cat : Animal
+    {
+        private bool isIndoor;
+
+        public Cat(string name, int age, bool isIndoor) : base(name, age)
+        {
+            this.isIndoor = isIndoor;
+        }
+
+        public override void MakeSound()
+        {
+            Console.WriteLine("Мяу! Мяу!");
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Домашняя кошка: {isIndoor}");
+        }
+
+        public void Purr()
+        {
+            Console.WriteLine($"{name} мурлычет...");
+        }
+    }
+
+    class Vehicle
+    {
+        protected string brand;
+        protected int year;
+        protected double speed;
+
+        public Vehicle(string brand, int year, double speed = 0)
+        {
+            this.brand = brand;
+            this.year = year;
+            this.speed = speed;
+        }
+
+        public virtual void Start()
+        {
+            Console.WriteLine($"{brand} запускается...");
+        }
+
+        public virtual void Stop()
+        {
+            speed = 0;
+            Console.WriteLine($"{brand} останавливается...");
+        }
+
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine($"Транспорт: {brand}, Год: {year}, Скорость: {speed} км/ч");
+        }
+    }
+
+    class Car : Vehicle
+    {
+        private int doors;
+        private string fuelType;
+
+        public Car(string brand, int year, int doors, string fuelType, double speed = 0)
+            : base(brand, year, speed)
+        {
+            this.doors = doors;
+            this.fuelType = fuelType;
+        }
+
+        public override void Start()
+        {
+            Console.WriteLine($"Автомобиль {brand} заводится с ключа...");
+            speed = 10;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Двери: {doors}, Топливо: {fuelType}");
+        }
+
+        public void Honk()
+        {
+            Console.WriteLine("Би-бип!");
+        }
+    }
+
+    class Motorcycle : Vehicle
+    {
+        private bool hasSidecar;
+
+        public Motorcycle(string brand, int year, bool hasSidecar, double speed = 0)
+            : base(brand, year, speed)
+        {
+            this.hasSidecar = hasSidecar;
+        }
+
+        public override void Start()
+        {
+            Console.WriteLine($"Мотоцикл {brand} заводится с кнопки...");
+            speed = 5;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Есть коляска: {hasSidecar}");
+        }
+
+        public void Wheelie()
+        {
+            Console.WriteLine($"{brand} делает вилли!");
+        }
+    }
+
+    abstract class Shape
+    {
+        protected string name;
+
+        public Shape(string name)
+        {
+            this.name = name;
+        }
+
+        public abstract double CalculateArea();
+        public abstract double CalculatePerimeter();
+
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine($"Фигура: {name}");
+            Console.WriteLine($"Площадь: {CalculateArea():F2}");
+            Console.WriteLine($"Периметр: {CalculatePerimeter():F2}");
+        }
+    }
+
+    class Circle : Shape
+    {
+        private double radius;
+
+        public Circle(double radius) : base("Круг")
+        {
+            this.radius = radius;
+        }
+
+        public override double CalculateArea()
+        {
+            return Math.PI * radius * radius;
+        }
+
+        public override double CalculatePerimeter()
+        {
+            return 2 * Math.PI * radius;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Радиус: {radius}");
+        }
+    }
+
+    class Rectangle : Shape
+    {
+        private double width;
+        private double height;
+
+        public Rectangle(double width, double height) : base("Прямоугольник")
+        {
+            this.width = width;
+            this.height = height;
+        }
+
+        public override double CalculateArea()
+        {
+            return width * height;
+        }
+
+        public override double CalculatePerimeter()
+        {
+            return 2 * (width + height);
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Ширина: {width}, Высота: {height}");
+        }
+    }
+
+    class Employee
+    {
+        protected string name;
+        protected decimal salary;
+        protected string department;
+
+        public Employee(string name, decimal salary, string department)
+        {
+            this.name = name;
+            this.salary = salary;
+            this.department = department;
+        }
+
+        public virtual void Work()
+        {
+            Console.WriteLine($"{name} выполняет свои обязанности...");
+        }
+
+        public virtual decimal CalculateBonus()
+        {
+            return salary * 0.1m;
+        }
+
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine($"Сотрудник: {name}");
+            Console.WriteLine($"Зарплата: {salary}, Отдел: {department}");
+            Console.WriteLine($"Бонус: {CalculateBonus()}");
+        }
+    }
+
+    class Manager : Employee
+    {
+        private int teamSize;
+
+        public Manager(string name, decimal salary, string department, int teamSize)
+            : base(name, salary, department)
+        {
+            this.teamSize = teamSize;
+        }
+
+        public override void Work()
+        {
+            Console.WriteLine($"{name} управляет командой из {teamSize} человек...");
+        }
+
+        public override decimal CalculateBonus()
+        {
+            return salary * 0.15m + teamSize * 100;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Размер команды: {teamSize}");
+        }
+
+        public void ConductMeeting()
+        {
+            Console.WriteLine($"{name} проводит собрание...");
+        }
+    }
+
+    class Developer : Employee
+    {
+        private string programmingLanguage;
+
+        public Developer(string name, decimal salary, string department, string programmingLanguage)
+            : base(name, salary, department)
+        {
+            this.programmingLanguage = programmingLanguage;
+        }
+
+        public override void Work()
+        {
+            Console.WriteLine($"{name} пишет код на {programmingLanguage}...");
+        }
+
+        public override decimal CalculateBonus()
+        {
+            return salary * 0.12m + 500;
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Язык программирования: {programmingLanguage}");
+        }
+
+        public void DebugCode()
+        {
+            Console.WriteLine($"{name} отлаживает код...");
+        }
+    }
+
+    class Account
+    {
+        protected string accountNumber;
+        protected decimal balance;
+        protected string owner;
+
+        public Account(string accountNumber, string owner, decimal balance = 0)
+        {
+            this.accountNumber = accountNumber;
+            this.owner = owner;
+            this.balance = balance;
+        }
+
+        public virtual void Deposit(decimal amount)
+        {
+            balance += amount;
+            Console.WriteLine($"Внесено: {amount}. Баланс: {balance}");
+        }
+
+        public virtual void Withdraw(decimal amount)
+        {
+            if (amount <= balance)
+            {
+                balance -= amount;
+                Console.WriteLine($"Снято: {amount}. Баланс: {balance}");
+            }
+            else
+            {
+                Console.WriteLine("Недостаточно средств!");
+            }
+        }
+
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine($"Счет: {accountNumber}");
+            Console.WriteLine($"Владелец: {owner}");
+            Console.WriteLine($"Баланс: {balance}");
+        }
+    }
+
+    class SavingsAccount : Account
+    {
+        private decimal interestRate;
+
+        public SavingsAccount(string accountNumber, string owner, decimal interestRate, decimal balance = 0)
+            : base(accountNumber, owner, balance)
+        {
+            this.interestRate = interestRate;
+        }
+
+        public override void Withdraw(decimal amount)
+        {
+            if (balance - amount >= 100) 
+            {
+                balance -= amount;
+                Console.WriteLine($"Снято: {amount}. Баланс: {balance}");
+            }
+            else
+            {
+                Console.WriteLine("Нельзя снять сумму ниже минимального остатка (100)!");
+            }
+        }
+
+        public void ApplyInterest()
+        {
+            decimal interest = balance * interestRate;
+            balance += interest;
+            Console.WriteLine($"Начислены проценты: {interest}. Новый баланс: {balance}");
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Процентная ставка: {interestRate:P2}");
+        }
+    }
+
+    class CheckingAccount : Account
+    {
+        private decimal overdraftLimit;
+
+        public CheckingAccount(string accountNumber, string owner, decimal overdraftLimit, decimal balance = 0)
+            : base(accountNumber, owner, balance)
+        {
+            this.overdraftLimit = overdraftLimit;
+        }
+
+        public override void Withdraw(decimal amount)
+        {
+            if (balance - amount >= -overdraftLimit)
+            {
+                balance -= amount;
+                Console.WriteLine($"Снято: {amount}. Баланс: {balance}");
+            }
+            else
+            {
+                Console.WriteLine($"Превышен лимит овердрафта! Лимит: {overdraftLimit}");
+            }
+        }
+
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Лимит овердрафта: {overdraftLimit}");
+        }
+    }
+
+    // ==================== ПОЛИМОРФИЗМ ====================
+
+    interface IPayable
+    {
+        decimal CalculatePayment();
+        void ProcessPayment();
+    }
+
+    abstract class ShapePolymorphic
+    {
+        public abstract double CalculateArea();
+
+        public virtual void Display()
+        {
+            Console.WriteLine($"Площадь: {CalculateArea():F2}");
+        }
+    }
+
+    class CirclePolymorphic : ShapePolymorphic
+    {
+        private double radius;
+
+        public CirclePolymorphic(double radius)
+        {
+            this.radius = radius;
+        }
+
+        public override double CalculateArea()
+        {
+            return Math.PI * radius * radius;
+        }
+
+        public override void Display()
+        {
+            Console.Write($"Круг (r={radius}) - ");
+            base.Display();
+        }
+    }
+
+    class RectanglePolymorphic : ShapePolymorphic
+    {
+        private double width;
+        private double height;
+
+        public RectanglePolymorphic(double width, double height)
+        {
+            this.width = width;
+            this.height = height;
+        }
+
+        public override double CalculateArea()
+        {
+            return width * height;
+        }
+
+        public override void Display()
+        {
+            Console.Write($"Прямоугольник ({width}x{height}) - ");
+            base.Display();
+        }
+    }
+
+    class EmployeePolymorphic : IPayable
+    {
+        protected string name;
+        protected decimal salary;
+
+        public EmployeePolymorphic(string name, decimal salary)
+        {
+            this.name = name;
+            this.salary = salary;
+        }
+
+        public virtual decimal CalculatePayment()
+        {
+            return salary;
+        }
+
+        public virtual void ProcessPayment()
+        {
+            Console.WriteLine($"Выплата {CalculatePayment()} сотруднику {name}");
+        }
+    }
+
+    class Contractor : IPayable
+    {
+        private string company;
+        private decimal hourlyRate;
+        private int hoursWorked;
+
+        public Contractor(string company, decimal hourlyRate, int hoursWorked)
+        {
+            this.company = company;
+            this.hourlyRate = hourlyRate;
+            this.hoursWorked = hoursWorked;
+        }
+
+        public decimal CalculatePayment()
+        {
+            return hourlyRate * hoursWorked;
+        }
+
+        public void ProcessPayment()
+        {
+            Console.WriteLine($"Выплата {CalculatePayment()} подрядчику {company}");
+        }
+    }
+
+    class Product
+    {
+        protected string name;
+        protected decimal price;
+
+        public Product(string name, decimal price)
+        {
+            this.name = name;
+            this.price = price;
+        }
+
+        public virtual decimal Price
+        {
+            get { return price; }
+            set { price = value; }
+        }
+
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine($"Товар: {name}, Цена: {price}");
+        }
+    }
+
+    class DigitalProduct : Product
+    {
+        private decimal fileSize;
+
+        public DigitalProduct(string name, decimal price, decimal fileSize)
+            : base(name, price)
+        {
+            this.fileSize = fileSize;
+        }
+
+        public override decimal Price
+        {
+            get { return base.Price * 0.9m; } 
+        }
+
+        public override void DisplayInfo()
+        {
+            Console.WriteLine($"Цифровой товар: {name}, Цена: {Price}, Размер: {fileSize}MB");
+        }
+    }
+
+    // ==================== АБСТРАКЦИЯ ====================
+
+    abstract class DatabaseConnection
+    {
+        protected string connectionString;
+        protected bool isConnected;
+
+        public DatabaseConnection(string connectionString)
+        {
+            this.connectionString = connectionString;
+            this.isConnected = false;
+        }
+
+        public abstract void Connect();
+        public abstract void Disconnect();
+        public abstract void ExecuteQuery(string query);
+
+        public bool IsConnected
+        {
+            get { return isConnected; }
+        }
+    }
+
+    class SqlConnection : DatabaseConnection
+    {
+        public SqlConnection(string connectionString) : base(connectionString) { }
+
+        public override void Connect()
+        {
+            Console.WriteLine("Подключаемся к SQL Server...");
+            isConnected = true;
+        }
+
+        public override void Disconnect()
+        {
+            Console.WriteLine("Отключаемся от SQL Server...");
+            isConnected = false;
+        }
+
+        public override void ExecuteQuery(string query)
+        {
+            if (!isConnected)
+                throw new InvalidOperationException("Нет подключения к базе данных!");
+
+            Console.WriteLine($"Выполняем SQL запрос: {query}");
+        }
+    }
+
+    interface IRepository<T>
+    {
+        void Add(T item);
+        void Update(T item);
+        void Delete(int id);
+        T GetById(int id);
+        List<T> GetAll();
+    }
+
+    class UserRepository : IRepository<Person>
+    {
+        private List<Person> users = new List<Person>();
+
+        public void Add(Person person)
+        {
+            users.Add(person);
+            Console.WriteLine($"Пользователь {person.FirstName} добавлен");
+        }
+
+        public void Update(Person person)
+        {
+            Console.WriteLine($"Пользователь {person.FirstName} обновлен");
+        }
+
+        public void Delete(int id)
+        {
+            Console.WriteLine($"Пользователь с ID {id} удален");
+        }
+
+        public Person GetById(int id)
+        {
+            Console.WriteLine($"Получаем пользователя с ID {id}");
+            return null;
+        }
+
+        public List<Person> GetAll()
+        {
+            Console.WriteLine($"Получаем всех пользователей (всего: {users.Count})");
+            return users;
+        }
+    }
+
+    abstract class Logger
+    {
+        public abstract void Log(string message, string level);
+
+        public void LogInfo(string message)
+        {
+            Log(message, "INFO");
+        }
+
+        public void LogError(string message)
+        {
+            Log(message, "ERROR");
+        }
+
+        public void LogWarning(string message)
+        {
+            Log(message, "WARNING");
+        }
+    }
+
+    class FileLogger : Logger
+    {
+        private string filePath;
+
+        public FileLogger(string filePath)
+        {
+            this.filePath = filePath;
+        }
+
+        public override void Log(string message, string level)
+        {
+            string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] {message}";
+            Console.WriteLine($"Записываем в файл {filePath}: {logEntry}");
+        }
+    }
+
+    interface IValidator<T>
+    {
+        bool Validate(T item);
+        List<string> GetErrors();
+    }
+
+    class EmailValidator : IValidator<string>
+    {
+        private List<string> errors = new List<string>();
+
+        public bool Validate(string email)
+        {
+            errors.Clear();
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                errors.Add("Email не может быть пустым");
+                return false;
+            }
+
+            if (!email.Contains("@"))
+            {
+                errors.Add("Email должен содержать @");
+                return false;
+            }
+
+            if (!email.Contains("."))
+            {
+                errors.Add("Email должен содержать точку");
+                return false;
+            }
+
+            if (email.Length < 5)
+            {
+                errors.Add("Email слишком короткий");
+                return false;
+            }
+
+            return true;
+        }
+
+        public List<string> GetErrors()
+        {
+            return errors;
+        }
+    }
+
+    abstract class PaymentProcessor
+    {
+        protected decimal amount;
+        protected string currency;
+
+        public PaymentProcessor(decimal amount, string currency = "USD")
+        {
+            this.amount = amount;
+            this.currency = currency;
+        }
+
+        public abstract bool ProcessPayment();
+        public abstract void RefundPayment();
+
+        public virtual void DisplayPaymentInfo()
+        {
+            Console.WriteLine($"Сумма платежа: {amount} {currency}");
+        }
+    }
+
+    class CreditCardProcessor : PaymentProcessor
+    {
+        private string cardNumber;
+        private string expiryDate;
+
+        public CreditCardProcessor(decimal amount, string cardNumber, string expiryDate, string currency = "USD")
+            : base(amount, currency)
+        {
+            this.cardNumber = cardNumber;
+            this.expiryDate = expiryDate;
+        }
+
+        public override bool ProcessPayment()
+        {
+            Console.WriteLine($"Обрабатываем платеж по карте {cardNumber} на сумму {amount} {currency}");
+            return true;
+        }
+
+        public override void RefundPayment()
+        {
+            Console.WriteLine($"Возврат средств на карту {cardNumber}");
+        }
+
+        public override void DisplayPaymentInfo()
+        {
+            base.DisplayPaymentInfo();
+            Console.WriteLine($"Карта: ****{cardNumber.Substring(cardNumber.Length - 4)}");
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            // Инкапсуляция
+            Console.WriteLine("=== ИНКАПСУЛЯЦИЯ ===\n");
+
+            BankAccount account = new BankAccount("123456789", "Иван Иванов", 1000);
+            account.DisplayInfo();
+            account.Deposit(500);
+            account.Withdraw(200);
+            Console.WriteLine();
+
+            Person person = new Person("Петр", "Петров", 30, "petr@example.com");
+            person.DisplayInfo();
+            Console.WriteLine();
+
+            Password password = new Password("SecurePass123");
+            password.DisplayStrength();
+            Console.WriteLine($"Проверка пароля: {password.Verify("SecurePass123")}");
+            Console.WriteLine();
+
+            Email email = new Email("test@example.com");
+            email.DisplayInfo();
+            Console.WriteLine();
+
+            Temperature temp = new Temperature(25);
+            temp.DisplayAll();
+            Console.WriteLine();
+
+            // Наследование
+            Console.WriteLine("=== НАСЛЕДОВАНИЕ ===\n");
+
+            Dog dog = new Dog("Бобик", 2, "Овчарка");
+            dog.DisplayInfo();
+            dog.MakeSound();
+            dog.Fetch();
+            Console.WriteLine();
+
+            Cat cat = new Cat("Мурка", 3, true);
+            cat.DisplayInfo();
+            cat.MakeSound();
+            cat.Purr();
+            Console.WriteLine();
+
+            Car car = new Car("Toyota", 2020, 4, "Бензин", 60);
+            car.DisplayInfo();
+            car.Start();
+            car.Honk();
+            Console.WriteLine();
+
+            Motorcycle bike = new Motorcycle("Harley", 2021, false, 80);
+            bike.DisplayInfo();
+            bike.Start();
+            bike.Wheelie();
+            Console.WriteLine();
+
+            Circle circle = new Circle(5);
+            circle.DisplayInfo();
+            Console.WriteLine();
+
+            Rectangle rectangle = new Rectangle(4, 6);
+            rectangle.DisplayInfo();
+            Console.WriteLine();
+
+            Manager manager = new Manager("Анна", 50000, "IT", 5);
+            manager.DisplayInfo();
+            manager.Work();
+            manager.ConductMeeting();
+            Console.WriteLine();
+
+            Developer developer = new Developer("Сергей", 40000, "IT", "C#");
+            developer.DisplayInfo();
+            developer.Work();
+            developer.DebugCode();
+            Console.WriteLine();
+
+            SavingsAccount savings = new SavingsAccount("SAV-001", "Иван", 0.05m, 1000);
+            savings.DisplayInfo();
+            savings.ApplyInterest();
+            savings.Withdraw(50);
+            Console.WriteLine();
+
+            CheckingAccount checking = new CheckingAccount("CHK-001", "Петр", 500, 200);
+            checking.DisplayInfo();
+            checking.Withdraw(600);
+            Console.WriteLine();
+
+            // Полиморфизм
+            Console.WriteLine("=== ПОЛИМОРФИЗМ ===\n");
+
+            Animal[] animals = new Animal[] { new Dog("Шарик", 3, "Дворняжка"), new Cat("Васька", 2, true) };
+            foreach (var animal in animals)
+            {
+                animal.MakeSound();
+                animal.DisplayInfo();
+                Console.WriteLine();
+            }
+
+            ShapePolymorphic[] shapes = new ShapePolymorphic[]
+            {
+            new CirclePolymorphic(3),
+            new RectanglePolymorphic(4, 5),
+            new CirclePolymorphic(2)
+            };
+
+            double totalArea = 0;
+            foreach (var shape in shapes)
+            {
+                shape.Display();
+                totalArea += shape.CalculateArea();
+            }
+            Console.WriteLine($"Общая площадь всех фигур: {totalArea:F2}\n");
+
+            IPayable[] payables = new IPayable[]
+            {
+            new EmployeePolymorphic("Мария", 45000),
+            new Contractor("Tech Solutions", 50, 160)
+            };
+
+            foreach (var payable in payables)
+            {
+                payable.ProcessPayment();
+            }
+            Console.WriteLine();
+
+            Product[] products = new Product[]
+            {
+            new Product("Физический товар", 100),
+            new DigitalProduct("Цифровой товар", 100, 50)
+            };
+
+            foreach (var product in products)
+            {
+                product.DisplayInfo();
+            }
+            Console.WriteLine();
+
+            // Абстракция
+            Console.WriteLine("=== АБСТРАКЦИЯ ===\n");
+
+            DatabaseConnection sqlConn = new SqlConnection("Server=localhost;Database=test;");
+            sqlConn.Connect();
+            sqlConn.ExecuteQuery("SELECT * FROM Users");
+            sqlConn.Disconnect();
+            Console.WriteLine();
+
+            UserRepository userRepo = new UserRepository();
+            userRepo.Add(person);
+            userRepo.GetAll();
+            Console.WriteLine();
+
+            Logger fileLogger = new FileLogger("log.txt");
+            fileLogger.LogInfo("Приложение запущено");
+            fileLogger.LogError("Произошла ошибка");
+            Console.WriteLine();
+
+            EmailValidator emailValidator = new EmailValidator();
+            string[] testEmails = { "bad", "good@example.com", "" };
+            foreach (string testEmail in testEmails)
+            {
+                bool isValid = emailValidator.Validate(testEmail);
+                Console.WriteLine($"Email '{testEmail}' валиден: {isValid}");
+                if (!isValid)
+                {
+                    foreach (string error in emailValidator.GetErrors())
+                    {
+                        Console.WriteLine($"  - {error}");
+                    }
+                }
+            }
+            Console.WriteLine();
+
+            PaymentProcessor payment = new CreditCardProcessor(1500, "1234567812345678", "12/25");
+            payment.DisplayPaymentInfo();
+            payment.ProcessPayment();
+            payment.RefundPayment();
+        }
+    }
+}
